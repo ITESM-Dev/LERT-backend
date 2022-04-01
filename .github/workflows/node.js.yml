@@ -1,0 +1,25 @@
+name: Deploy to Cloud Foundry
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    # Build your app here
+
+  deploy:
+    runs-on: ubuntu-18.04
+    needs: build
+    
+    steps:
+    - uses: citizen-of-planet-earth/cf-cli-action@master
+      with:
+        cf_api: http://api.us-south.cf.cloud.ibm.com
+        cf_username: ${{ secrets.CF_USER }}
+        cf_password: ${{ secrets.CF_PASSWORD }}
+        cf_org: a01733983@tec.mx
+        cf_space: dev
+        command: push -f manifest-dev.yml
