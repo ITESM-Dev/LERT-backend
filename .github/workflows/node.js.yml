@@ -1,25 +1,18 @@
 name: Deploy to Cloud Foundry
-
 on:
   push:
-    branches:
-    - main
-
+    branches: [main]
 jobs:
-  build:
-    runs-on: ubuntu-18.04
-    # Build your app here
-
   deploy:
-    runs-on: ubuntu-18.04
-    needs: build
-    
+    runs-on: ubuntu-latest
     steps:
-    - uses: citizen-of-planet-earth/cf-cli-action@master
-      with:
-        cf_api: http://api.us-south.cf.cloud.ibm.com
-        cf_username: ${{ secrets.CF_USER }}
-        cf_password: ${{ secrets.CF_PASSWORD }}
-        cf_org: a01733983@tec.mx
-        cf_space: dev
-        command: push -f manifest-dev.yml
+      - uses: actions/checkout@v2
+      - uses: jhunt/cf-push@v1
+        with:
+          api:      http://api.us-south.cf.cloud.ibm.com
+          org:      a01733983@tec.mx
+          space:    dev
+          username: ${{ secrets.CF_USERNAME }}
+          password: ${{ secrets.CF_PASSWORD }}
+          manifest: manifest.yml
+          validate: false
