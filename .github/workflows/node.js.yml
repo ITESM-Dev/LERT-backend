@@ -12,7 +12,7 @@ jobs:
           api:      http://api.us-south.cf.cloud.ibm.com
           org:      a01733983@tec.mx
           space:    dev
-          username: ${{ secrets.CF_USERNAME }}
+          username: ${{ secrets.CF_USER }}
           password: ${{ secrets.CF_PASSWORD }}
           manifest: manifest.yml
           validate: false
