@@ -10,9 +10,9 @@ jobs:
       - uses: jhunt/cf-push@v1
         with:
           api:      http://api.us-south.cf.cloud.ibm.com
-          org:      a01733983@tec.mx
-          space:    dev
-          username: ${{ secrets.CF_USER }}
+          org:      ${{ secrets.CF_ORG }}
+          space:    Production
+          username: ${{ secrets.CF_USERNAME }}
           password: ${{ secrets.CF_PASSWORD }}
           manifest: manifest.yml
           validate: false
