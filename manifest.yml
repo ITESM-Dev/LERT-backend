@@ -1,5 +1,5 @@
 ---
 applications:
- - name: itesmdev-lert-development
+ - name: ${APPLICATION_NAME}
    random-route: true
    memory: 128M
