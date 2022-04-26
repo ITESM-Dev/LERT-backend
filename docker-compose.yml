@@ -6,14 +6,11 @@ services:
     privileged: true
     ports:
       - 50000:50000
-    
     env_file:
       - ./.env
-      
-    command: db2start
   
     volumes:
-      - ./database:/database
-      - /Docker:/database
+      - c:/users/lenovo/downloads/itesm\-dev/lert-backend:/database
+    command: db2start
 
     
