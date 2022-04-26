@@ -1,18 +1,11 @@
-FROM python:2-alpine
+FROM tiangolo/uwsgi-nginx-flask:python3.10-alpine3.7
 
-COPY ./requirements.txt /app/requirements.txt
+RUN pip3.8 install pipenv==2021.11.9
+WORKDIR /usr/src/lert-backend
 
-WORKDIR /app
+COPY ./Pipfile .
+RUN pipenv install
 
-RUN apk --update add python py-pip openssl ca-certificates py-openssl wget bash linux-headers
-RUN apk --update add --virtual build-dependencies libffi-dev openssl-dev python-dev py-pip build-base \
-  && pip install --upgrade pip \
-  && pip install --upgrade pipenv\
-  && pip install --upgrade -r /app/requirements.txt\
-  && apk del build-dependencies
+RUN chmod +x /cmd.sh
+COPY cmd.sh / 
 
-COPY . /app
-
-ENTRYPOINT [ "python" ]
-
-CMD [ "hello.py" ]

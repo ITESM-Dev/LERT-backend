@@ -1,0 +1,20 @@
+version: '3.10'
+
+services:
+  db2:
+    image: ibmcom/db2
+    privileged: true
+    restart: always
+    ports:
+      - 50000:50000
+    environment:
+      DB_USER: DB2INST1
+      DB2INST1_PASSWORD: apassword
+      LICENSE: accept
+      DB_NAME: testBackend
+      DB_PROTOCOL: TCPIP
+    command: db2start
+    volumes:
+      - ./database:/database
+
+    
