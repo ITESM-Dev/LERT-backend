@@ -62,6 +62,7 @@ target/
 # Mac files
 *.DS_Store
 
+database
 vcap-local.json
 database/config/global.reg
 database/config/instance.cfg

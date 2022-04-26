@@ -8,9 +8,8 @@ services:
       - 50000:50000
     env_file:
       - ./.env
-  
     volumes:
-      - c:/users/lenovo/downloads/itesm\-dev/lert-backend:/database
+      - ./database:/database
     command: db2start
 
     
