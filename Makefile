@@ -3,6 +3,7 @@
 .PHONY: up
 up: ## run the project
 	@docker-compose up -d
+	@docker-compose logs -f
 .PHONY: stop
 stop: ## stop Docker containers without removing them
 	@docker-compose stop

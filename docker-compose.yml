@@ -10,6 +10,6 @@ services:
       - ./.env
     volumes:
       - ./database:/database
-    command: db2start
 
-    
+volumes:
+  database:
