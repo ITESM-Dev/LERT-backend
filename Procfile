@@ -4,4 +4,4 @@
 
 # [PROCESS_TYPE]: COMMAND
 # web: Process that handles http traffic
-web: gunicorn prueba:app prueba.py
+web: pipenv run gunicorn LERT.wsgi:app
