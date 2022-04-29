@@ -9,7 +9,6 @@ Flask = ">=1.0.0"
 gunicorn = "*"
 wheel = "==0.37.1"
 ibm_db = "*"
-sqlalchemy = "*"
 
 [dev-packages]
 
