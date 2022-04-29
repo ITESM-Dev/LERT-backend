@@ -13,3 +13,6 @@ down: ## stop and remove Docker containers
 .PHONY: pipi
 pipi: ## Install packages
 	@docker-compose -f docker-compose.yml exec app pipenv run pipenv install -d
+.PHONY: restart
+restart:
+	@docker-compose build --no-cache
