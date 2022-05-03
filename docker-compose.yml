@@ -3,7 +3,10 @@ version: '3.10'
 services:
   app:
     build: ./
-    command: pipenv run gunicorn LERT.wsgi:app
+    #PRODUCTION
+    # command: pipenv run gunicorn LERT.wsgi:app
+    #DEVELOPMENT
+    command: pipenv run python ./LERT/prueba.py
     volumes: 
       - ./:/var/data
     ports:

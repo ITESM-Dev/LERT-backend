@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./lert_driver_db2/db2"
+    ]
+}

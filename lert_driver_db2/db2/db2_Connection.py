@@ -2,18 +2,32 @@ import ibm_db
 import ibm_db_dbi
 import os
 
-#Environment variables
-DB_NAME = os.environ.get("DB_NAME")
-DB_HOSTNAME = os.environ.get("DB_HOSTNAME")
-DB_PASSWORD = os.environ.get("DB_PASSWORD")
-SECURITY = os.environ.get("SECURITY")
-UID = os.environ.get("UID")
-CERTIFICATE = os.environ.get("CERTIFICATE")
-
 class Db2Connection(object):
+    dbName = ""
+    dbHostName = ""
+    dbPassword = ""
+    security = ""
+    uid = ""
+    certificate = ""
 
     def __init__(self):
-        self._create_conn()
+        # self.dbName = db_name
+        # self.dbHostName = db_hostname
+        # self.dbPassword =db_password
+        # self.security = security_
+        # self.uid = uid_
+        # self.certificate = certificate_
+
+        #Environment variables
+        DB_NAME = os.environ.get("DBNAME")
+        print(DB_NAME)
+        DB_HOSTNAME = os.environ.get("DB_HOSTNAME")
+        DB_PASSWORD = os.environ.get("DB_PASSWORD")
+        SECURITY = os.environ.get("SECURITY")
+        UID = os.environ.get("UID")
+        CERTIFICATE = os.environ.get("CERTIFICATE")
+
+        #self._create_conn()
 
     def _create_conn(self):
     
