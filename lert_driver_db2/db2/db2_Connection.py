@@ -19,20 +19,19 @@ class Db2Connection(object):
         # self.certificate = certificate_
 
         #Environment variables
-        DB_NAME = os.environ.get("DBNAME")
-        print(DB_NAME)
-        DB_HOSTNAME = os.environ.get("DB_HOSTNAME")
-        DB_PASSWORD = os.environ.get("DB_PASSWORD")
-        SECURITY = os.environ.get("SECURITY")
-        UID = os.environ.get("UID")
-        CERTIFICATE = os.environ.get("CERTIFICATE")
+        self.DB_NAME = os.environ.get("DBNAME")        
+        self.DB_HOSTNAME = os.environ.get("DB_HOSTNAME")
+        self.DB_PASSWORD = os.environ.get("DB2INST1_PASSWORD")
+        self.SECURITY = os.environ.get("SECURITY")
+        self.UID = os.environ.get("UID")
+        self.CERTIFICATE = os.environ.get("CERTIFICATE")
 
         #self._create_conn()
 
     def _create_conn(self):
     
-        conn_str = "database=${DB_NAME};hostname=${DB_HOSTNAME};port=32733;security=${SECURITY};SSLServerCertificate=${CERTIFICATE};uid=${UID};pwd=${DB_PASSWORD}"
-      
+        conn_str = f"database=${self.DB_NAME};hostname=${self.DB_HOSTNAME};port=32733;security=${self.SECURITY};SSLServerCertificate=${self.CERTIFICATE};uid=${self.UID};pwd=${self.DB_PASSWORD}"
+        
         self.ibm_db_conn = ibm_db.connect(conn_str, '', '')
         conn = ibm_db_dbi.Connection(self.ibm_db_conn)
         self.cursor = conn.cursor()
