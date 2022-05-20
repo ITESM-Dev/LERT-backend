@@ -1,4 +1,4 @@
-from LERT.prueba import app
+from LERT.app import app
 
 if __name__ == "__main__":
     app.run()
