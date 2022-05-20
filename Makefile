@@ -3,7 +3,7 @@
 .PHONY: up
 up: ## run the project
 	@docker-compose up -d
-	@docker-compose logs -f
+	@docker attach lert-backend_lert_1
 .PHONY: stop
 stop: ## stop Docker containers without removing them
 	@docker-compose stop
@@ -13,6 +13,7 @@ down: ## stop and remove Docker containers
 .PHONY: pipi
 pipi: ## Install packages
 	@docker-compose -f docker-compose.yml exec app pipenv run pipenv install -d
-.PHONY: restart
-restart:
+.PHONY: rebuild
+rebuild:
+	@docker-compose down --remove-orphans
 	@docker-compose build --no-cache
