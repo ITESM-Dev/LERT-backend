@@ -1,4 +1,4 @@
-from flask import jsonify, Flask
+from flask import Flask
 from sqlalchemy import *
 from LERT.db import database
 from LERT.user.views import user

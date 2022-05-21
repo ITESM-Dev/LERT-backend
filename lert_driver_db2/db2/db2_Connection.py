@@ -2,7 +2,6 @@ import ibm_db
 import ibm_db_dbi
 import os
 from sqlalchemy import *
-import ibm_db_sa
 
 # Definition of ENV variables
 DB_NAME = os.environ.get("DBNAME")        
