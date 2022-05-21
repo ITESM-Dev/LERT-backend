@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 def create_app():
     app.config.from_object('config.DevelopmentConfig')
-    database.init_app()
+    #database.init_app()
     
 app.register_blueprint(user)
 
