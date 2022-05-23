@@ -2,11 +2,13 @@ from LERT.db.database import db
 
 
 class Manager(db.Model):
+    __tablename__ = "Manager"
+
     idManager = db.Column(db.Integer, primary_key=True)
     idUser = db.Column(db.Integer)
-    idOPManager = db.Column(db.Integer)
-    idICA_Admin = db.Column(db.Integer)
+    idOPManager = db.Column(db.Integer, db.ForeignKey("OpManager.idOPManager"))
+    idICA_Admin = db.Column(db.Integer, db.ForeignKey("ICAAdmin.idICA_Admin"))
 
-#def __init__(self, name, email):
-#    self.name = name
-#    self.email = email
+    user = db.relationship("User", back_populates="manager")
+    expense = db.relationship("Expense")
+    
