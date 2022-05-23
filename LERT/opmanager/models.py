@@ -9,5 +9,6 @@ class OpManager(db.Model):
     status = db.Column(db.String(120))
 
     user = db.relationship("User", back_populates="opManager")
+    manager = db.relationship("Manager")
 
     
