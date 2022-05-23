@@ -3,7 +3,6 @@
 .PHONY: up
 up: ## run the project
 	@docker-compose up -d
-	@docker attach lert-backend_lert_1
 .PHONY: stop
 stop: ## stop Docker containers without removing them
 	@docker-compose stop
