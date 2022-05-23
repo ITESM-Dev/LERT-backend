@@ -15,9 +15,12 @@ class Expense(db.Model):
     __tablename__ = 'Expense'
 
     idExpense = db.Column(db.Integer, primary_key=True)
+    idManager = db.Column(db.Integer, db.ForeignKey('Manager.idManager'))
+    idManager = db.Column(db.Integer, db.ForeignKey('ExpenseType.idManager'))
     cost = db.Column(db.Float)
     date = db.Column(db.String(100))
     comment = db.Column(db.String(255))
     resource = db.relationship("Resource", secondary=association_table_Expense_Resource)
     ica = db.relationship("ICA", secondary=association_table_Expense_ICA)
-    manager = db.relationship("Manager")
+    expenseType = db.relationship("ExpenseType", back_populates="expense")
+    resourceExpense = db.relationship("ResourceExpense", back_populates="expense", uselist=False)
