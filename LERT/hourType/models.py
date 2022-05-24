@@ -2,6 +2,8 @@ from LERT.db.database import db
 
 
 class HourType(db.Model):
+    __tablename__ = "HourType"
+
     idHourType = db.Column(db.Integer, primary_key=True)
     idBandType = db.Column(db.Integer)
     type = db.Column(db.String(200))
@@ -11,6 +13,4 @@ class HourType(db.Model):
     dateToStart = db.Column(db.String(100))
     dateToFinish = db.Column(db.String(100))
 
-#def __init__(self, name, email):
-#    self.name = name
-#    self.email = email
+    resourceExpense = db.relationship("ResourceExpense", back_populates="hourType", uselist=False)
