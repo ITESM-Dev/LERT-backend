@@ -5,7 +5,9 @@ WORKDIR /usr/src/LERT-backend
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONFAULTHANDLER 1
 
-RUN apt-get update && pip install --upgrade pip && pip install pipenv
+RUN apt-get update 
+RUN pip install --upgrade pip 
+RUN pip install pipenv
 
 COPY ./Pipfile .
 RUN pipenv install
