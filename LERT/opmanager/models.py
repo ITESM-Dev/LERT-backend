@@ -2,13 +2,10 @@ from LERT.db.database import db
 
 
 class OpManager(db.Model):
-    __tablename__ = 'OpManager'
-
     idOPManager = db.Column(db.Integer, primary_key=True)
-    idUser = db.Column(db.Integer, db.ForeignKey('User.idUser'))
+    idUser = db.Column(db.Integer)
     status = db.Column(db.String(120))
 
-    user = db.relationship("User", back_populates="opManager")
-    manager = db.relationship("Manager")
-
-    
+#def __init__(self, name, email):
+#    self.name = name
+#    self.email = email
