@@ -3,11 +3,12 @@ from sqlalchemy import *
 from LERT.db import database
 from LERT.user.views import user
 
-app = Flask(__name__)
+
+app = Flask(__name__, static_url_path='')
 
 def create_app():
-    app.config.from_object('config.DevelopmentConfig')
-    database.init_app()
+    app.config.from_object('config.ProductionConfig')
+    #database.init_app()
     
 app.register_blueprint(user)
 
