@@ -10,8 +10,3 @@ def hello():
 @user.route("/name")
 def name():
     return "ricardo"
-
-@user.route('/ajax_ddl')
-def ajax_ddl():
-    xml = 'foo'
-    return Response(xml, mimetype='text/xml')
