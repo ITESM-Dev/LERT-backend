@@ -1,7 +1,9 @@
 from LERT.db.database import db
 
 
-class Ica(db.Model):
+class ICA(db.Model):
+    __tablename__ = "ICA"
+
     idICA = db.Column(db.Integer, primary_key=True)
     icaCode = db.Column(db.String(120))
     icaCore = db.Column(db.String(120))
@@ -30,9 +32,3 @@ class Ica(db.Model):
     rCtyPerf = db.Column(db.String(50))
     totalBilling = db.Column(db.Float)
 
-
-
-
-#def __init__(self, name, email):
-#    self.name = name
-#    self.email = email
