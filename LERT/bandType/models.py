@@ -2,6 +2,8 @@ from LERT.db.database import db
 
 
 class BandType(db.Model):
+    __tablename__ = "BandType"
+
     idBandType = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.String(200))
     band = db.Column(db.String(50))
@@ -9,6 +11,4 @@ class BandType(db.Model):
     yearlyRate = db.Column(db.Float) 
     dateToStart = db.Column(db.String(100))
 
-#def __init__(self, name, email):
-#    self.name = name
-#    self.email = email
+    hourType = db.relationship("HourType", back_populates="bandType", uselist=False)
