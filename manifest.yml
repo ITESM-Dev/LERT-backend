@@ -1,5 +1,8 @@
 ---
 applications:
- - name: itesmdev-lert
+ - name: LERT-Flask
    random-route: true
-   memory: 128M
+   memory: 100M
+   disk_quota: 1G
+   buildpacks:
+      - https://github.com/cloudfoundry/python-buildpack.git
