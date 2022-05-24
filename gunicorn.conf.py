@@ -1,6 +1,9 @@
 from imp import reload
-bind = ":8000"
-timeout = 3600
+import os
+
+port = int(os.getenv('PORT', 8000))
+bind = f":{port}"
+timeout = 1000
 loglevel= 'debug'
-workers = 4
-reload = True
+workers = 2
+reload = False
