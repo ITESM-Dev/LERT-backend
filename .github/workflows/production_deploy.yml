@@ -10,7 +10,7 @@ jobs:
       - uses: jhunt/cf-push@v1
         with:
           api:      http://api.us-south.cf.cloud.ibm.com
-          space:    dev
+          space:    Production
           org:      ${{ secrets.CF_ORG }}
           username: ${{ secrets.CF_USER }}
           password: ${{ secrets.CF_PASSWORD }}
