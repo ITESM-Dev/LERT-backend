@@ -1,6 +1,17 @@
 from flask import Blueprint
+#from LERT.db.session import session
+from LERT.db.database import connection
+from sqlalchemy.orm import Session
+from LERT.user.models import User
 
 user = Blueprint('user', __name__)
+
+session = Session(connection.e)
+
+user1 = User(name = "test name 2", mail = "fffd@test.com", password = "testpassword",
+token = "testToken", expiration = 8, role = "Admin")
+session.add(user1)
+session.commit() 
 
 @user.route("/")
 def hello():
