@@ -5,6 +5,7 @@ from sqlalchemy import *
 from sqlalchemy.orm import relationship
 
 class ResourceExpense(Base):
+    print("Test resource")
     __tablename__ = 'ResourceExpense'
     
     idResourceExpense = Column(Integer, primary_key=True)

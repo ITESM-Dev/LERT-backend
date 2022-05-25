@@ -1,5 +1,4 @@
 from LERT.db.database import Base
-from LERT.expense.models import Expense
 from LERT.resource.models import Resource
 from LERT.manager.models import Manager
 from LERT.expenseType.models import ExpenseType
@@ -9,13 +8,13 @@ from sqlalchemy.orm import relationship
 
 association_table_Expense_Resource = Table(
     'association', Base.metadata,
-    Column('idExpense', Integer, ForeignKey(Expense.idExpense)),
+    Column('idExpense', Integer, ForeignKey('Expense.idExpense')),
     Column('idResource', Integer, ForeignKey(Resource.idSerial))
 )
 
 association_table_Expense_ICA = Table(
-    'association', Base.metadata,
-    Column('idExpense', Integer, ForeignKey(Expense.idExpense)),
+    'association2', Base.metadata,
+    Column('idExpense', Integer, ForeignKey('Expense.idExpense')),
     Column('idICA', Integer, ForeignKey(ICA.idICA))
 )
 class Expense(Base):

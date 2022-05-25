@@ -1,6 +1,9 @@
 from sqlalchemy.orm import Session
 from LERT.db.database import connection
+from LERT.resourceExpense.models import ResourceExpense
 from LERT.administrator.models import Administrator
+from LERT.icaAdmin.models import ICAAdmin
+from LERT.opmanager.models import OpManager
 
 try:
 
@@ -10,7 +13,7 @@ try:
     #session.commit() 
 
     connection.Base.metadata.create_all(connection.e)
-    print(connection.Base.metadata.sorted_tables)
+    print(connection.Base.metadata.tables)
 
 except Exception as e:
     print(e)

@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import *
 
 class BandType(Base):
-    __tablename__ = "BandType"
+    __tablename__ = 'BandType'
 
     idBandType = Column(Integer, primary_key=True)
     type = Column(String(200))
@@ -12,4 +12,4 @@ class BandType(Base):
     yearlyRate = Column(Float) 
     dateToStart = Column(String(100))
 
-    hourType = relationship("HourType", back_populates="bandType", uselist=False)
+    hourType = relationship('HourType', back_populates="bandType", uselist=False)
