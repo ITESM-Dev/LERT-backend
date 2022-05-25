@@ -1,18 +1,15 @@
-FROM python:2-alpine
+FROM python:3.10.4 as base
+WORKDIR /usr/src/LERT-backend
 
-COPY ./requirements.txt /app/requirements.txt
+# Python behaviour
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONFAULTHANDLER 1
 
-WORKDIR /app
+RUN apt-get update 
+RUN pip install --upgrade pip 
+RUN pip install pipenv
 
-RUN apk --update add python py-pip openssl ca-certificates py-openssl wget bash linux-headers
-RUN apk --update add --virtual build-dependencies libffi-dev openssl-dev python-dev py-pip build-base \
-  && pip install --upgrade pip \
-  && pip install --upgrade pipenv\
-  && pip install --upgrade -r /app/requirements.txt\
-  && apk del build-dependencies
+COPY ./Pipfile .
+RUN pipenv install
 
-COPY . /app
-
-ENTRYPOINT [ "python" ]
-
-CMD [ "hello.py" ]
+COPY . .
