@@ -2,13 +2,14 @@ from flask import jsonify, Flask
 from sqlalchemy import *
 from LERT.db import database
 from LERT.user.views import user
+from db2_Connection import Db2Connection
 
 app = Flask(__name__)
 
 def create_app():
     app.config.from_object('config.DevelopmentConfig')
-    database.init_app()
-    
+    database
+  
 app.register_blueprint(user)
 
 #sentence = "SELECT * FROM OOLONG"
