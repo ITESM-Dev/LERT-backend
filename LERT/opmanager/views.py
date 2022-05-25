@@ -1,7 +1,7 @@
 from flask import Blueprint
 
-OpManager = Blueprint('OpManager', __name__)
+opManager = Blueprint('opManager', __name__)
 
-@OpManager.route("/")
+@opManager.route("/")
 def hello():
     return "<h1 style='color:blue'>Hello There!</h1>"
