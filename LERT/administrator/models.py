@@ -7,5 +7,4 @@ class Administrator(Base):
 
     idAdmin = Column(Integer, primary_key=True)
     idUser = Column(Integer, ForeignKey('User.idUser'))
-    TEST = Column(String(56))
     user = relationship("User", back_populates="admin")
