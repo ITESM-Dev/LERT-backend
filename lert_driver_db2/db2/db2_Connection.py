@@ -2,7 +2,7 @@ import ibm_db
 import ibm_db_dbi
 import os
 from sqlalchemy import *
-import ibm_db_sa
+from sqlalchemy.orm import sessionmaker
 
 # Definition of ENV variables
 DB_NAME = os.environ.get("DBNAME")        
@@ -28,20 +28,23 @@ class Db2Connection(object):
             e = create_engine(f"db2+ibm_db://{UID}:{DB_PASSWORD}@{DB_HOSTNAME}:50000/{DB_NAME}")
             self.metadata = MetaData()
             self.metadata.bind = e
+            Session = sessionmaker(e)
+            self.Session = Session()
             
         except Exception as e:
             print(e)
+
     def _create_models(self):
-        self.metadata.create_all()
+        try:
+            self.metadata.create_all()
+        except Exception as e:
+            print(e)
+
     def _validate_connection(self):
         print(f"State of connection is: {ibm_db.active(self.ibm_db_conn)}")
 
     def execute(self, sentence):
         self.cursor.execute(sentence)
-
-    def get_one(self, sentence):
-        self.cursor.execute(sentence)
-        return self.cursor.fetchone()
 
     def get_all(self, sentence):
         try:
@@ -49,9 +52,6 @@ class Db2Connection(object):
             return self.cursor.fetchall()
         except Exception as e:
             print(e)
-
-    def commit(self):
-        pass
 
     def close_connection(self):
         self.cursor.close()

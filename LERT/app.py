@@ -4,7 +4,7 @@ from flask import jsonify, Flask
 from sqlalchemy import *
 from LERT.db import database
 from LERT.user.views import user
-
+from db2_Connection import Db2Connection
 
 app = Flask(__name__, static_url_path='')
 
