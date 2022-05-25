@@ -1,3 +1,5 @@
+import json
+import os
 from flask import jsonify, Flask
 from sqlalchemy import *
 from LERT.db import database
@@ -7,7 +9,12 @@ from LERT.user.views import user
 app = Flask(__name__, static_url_path='')
 
 def create_app():
-    app.config.from_object('config.ProductionConfig')
+    if os.getenv('ENVIRONMENT') == 'dev':
+        app.config.from_object('config.DevelopmentConfig')
+        print(os.getenv('ENVIRONMENT'))
+    elif os.getenv('ENVIRONMENT') == 'prod':
+        app.config.from_object('config.DevelopmentConfig')
+        print(os.getenv('ENVIRONMENT'))
     #database.init_app()
     
 app.register_blueprint(user)
