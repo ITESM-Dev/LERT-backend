@@ -1,7 +1,12 @@
-from flask import Blueprint
+from flask import Blueprint, jsonify, request
+from werkzeug import Response
 
 user = Blueprint('user', __name__)
 
 @user.route("/")
 def hello():
-    return "<h1 style='color:blue'>Hello There!</h1>"
+    return "hello"
+
+@user.route("/name")
+def name():
+    return "ricardo"
