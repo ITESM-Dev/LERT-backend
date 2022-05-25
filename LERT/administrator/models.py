@@ -1,8 +1,11 @@
-from LERT.db.database import db
+from LERT.db.database import Base
+from sqlalchemy import *
+from sqlalchemy.orm import relationship
 
-class Administrator(db.Model):
+class Administrator(Base):
     __tablename__ = 'Administrator'
 
-    idAdmin = db.Column(db.Integer, primary_key=True)
-    idUser = db.Column(db.Integer, db.ForeignKey('User.idUser'))
-    user = db.relationship("User", back_populates="admin")
+    idAdmin = Column(Integer, primary_key=True)
+    name = Column(String(100))
+    #idUser = Column(Integer, ForeignKey('User.idUser'))
+    #user = relationship("User", back_populates="admin")
