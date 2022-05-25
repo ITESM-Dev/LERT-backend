@@ -1,17 +1,18 @@
-from LERT.db.database import db
+from LERT.db.database import Base
+from sqlalchemy.orm import relationship
+from sqlalchemy import *
 
-
-class HourType(db.Model):
+class HourType(Base):
     __tablename__ = "HourType"
 
-    idHourType = db.Column(db.Integer, primary_key=True)
-    idBandType = db.Column(db.Integer, db.ForeignKey("bandType.idBandType"))
-    type = db.Column(db.String(200))
-    band = db.Column(db.String(50))
-    country = db.Column(db.String(120))
-    rate = db.Column(db.Float)
-    dateToStart = db.Column(db.String(100))
-    dateToFinish = db.Column(db.String(100))
+    idHourType = Column(Integer, primary_key=True)
+    idBandType = Column(Integer, ForeignKey("bandType.idBandType"))
+    type = Column(String(200))
+    band = Column(String(50))
+    country = Column(String(120))
+    rate = Column(Float)
+    dateToStart = Column(String(100))
+    dateToFinish = Column(String(100))
 
-    resourceExpense = db.relationship("ResourceExpense", back_populates="hourType", uselist=False)
-    bandType = db.relationship("BandType", back_populates="hourType")
+    resourceExpense = relationship("ResourceExpense", back_populates="hourType", uselist=False)
+    bandType = relationship("BandType", back_populates="hourType")
