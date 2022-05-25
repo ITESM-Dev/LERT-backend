@@ -1,6 +1,12 @@
 from flask import jsonify, Flask
 from sqlalchemy import *
 from LERT.db import database, session
+from LERT.ica.views import ica
+from LERT.opmanager.views import opManager
+from LERT.manager.views import manager
+from LERT.expenseType.views import expenseType
+from LERT.hourType.views import hourType
+from LERT.bandType.views import bandType
 from LERT.user.views import user
 from LERT.administrator.views import admin
 from LERT.icaAdmin.views import icaAdmin
@@ -23,6 +29,12 @@ app.register_blueprint(icaAdmin)
 app.register_blueprint(resource)
 app.register_blueprint(expense)
 app.register_blueprint(resourceExpense)
+app.register_blueprint(ica)
+app.register_blueprint(opManager)
+app.register_blueprint(manager)
+app.register_blueprint(expenseType)
+app.register_blueprint(hourType)
+app.register_blueprint(bandType)
 
 #sentence = "SELECT * FROM OOLONG"
 #rows = connection.get_all(sentence)
