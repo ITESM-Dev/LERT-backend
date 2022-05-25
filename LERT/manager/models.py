@@ -1,14 +1,15 @@
-from LERT.db.database import db
+from LERT.db.database import Base
+from sqlalchemy.orm import relationship
+from sqlalchemy import *
 
-
-class Manager(db.Model):
+class Manager(Base):
     __tablename__ = "Manager"
 
-    idManager = db.Column(db.Integer, primary_key=True)
-    idUser = db.Column(db.Integer, db.ForeignKey("User.idUser"))
-    idOPManager = db.Column(db.Integer, db.ForeignKey("OpManager.idOPManager"))
-    idICA_Admin = db.Column(db.Integer, db.ForeignKey("ICAAdmin.idICA_Admin"))
+    idManager = Column(Integer, primary_key=True)
+    idUser = Column(Integer, ForeignKey("User.idUser"))
+    idOPManager = Column(Integer, ForeignKey("OpManager.idOPManager"))
+    idICA_Admin = Column(Integer, ForeignKey("ICAAdmin.idICA_Admin"))
 
-    user = db.relationship("User", back_populates="manager")
-    expense = db.relationship("Expense")
+    user = relationship("User", back_populates="manager")
+    expense = relationship("Expense")
     
