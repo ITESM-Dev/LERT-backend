@@ -8,6 +8,7 @@ class OpManager(Base):
 
     idOPManager = Column(Integer, primary_key=True)
     idUser = Column(Integer, ForeignKey('User.idUser'))
+    country = Column(String(120))
     status = Column(String(120))
 
     user = relationship("User", back_populates="opManager")
