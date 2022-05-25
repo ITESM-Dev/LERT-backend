@@ -1,16 +1,19 @@
-from LERT.db.database import db
-class User(db.Model):
+from LERT.db.database import Base
+from sqlalchemy import *
+from sqlalchemy.orm import relationship
+
+class User(Base):
     __tablename__='User'
 
-    idUser = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
-    mail = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(100))
-    token = db.Column(db.String(100))
-    expiration = db.Column(db.Integer)
-    role = db.Column(db.String(100))
-    admin = db.relationship("Administrator", back_populates="user", uselist=False)
-    ica_admin = db.relationship("ICAAdmin", back_populates="user", uselist=False)
-    opManager = db.relationship("OpManager", back_populates="user", uselist=False)
-    manager = db.relationship("Manager", back_populates="user", uselist=False)
-    resource = db.relationship("Resource", back_populates="user", uselist=False)
+    idUser = Column(Integer, primary_key=True)
+    name = Column(String(100))
+    mail = Column(String(100), unique=True)
+    password = Column(String(100))
+    token = Column(String(100))
+    expiration = Column(Integer)
+    role = Column(String(100))
+    admin = relationship("Administrator", back_populates="user", uselist=False)
+    ica_admin = relationship("ICAAdmin", back_populates="user", uselist=False)
+    opManager = relationship("OpManager", back_populates="user", uselist=False)
+    manager = relationship("Manager", back_populates="user", uselist=False)
+    resource = relationship("Resource", back_populates="user", uselist=False)

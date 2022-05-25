@@ -1,8 +1,10 @@
-from LERT.db.database import db
-class Resource(db.Model):
+from LERT.db.database import Base
+from sqlalchemy import *
+from sqlalchemy.orm import relationship
+class Resource(Base):
     __tablename__ = 'Resource'
     
-    idSerial = db.Column(db.Integer, primary_key=True)
-    country = db.Column(db.String(120))
-    idUser = db.Column(db.Integer, db.ForeignKey('User.idUser'))
-    user = db.relationship("User", back_populates="resource")
+    idSerial = Column(Integer, primary_key=True)
+    country = Column(String(120))
+    idUser = Column(Integer, ForeignKey('User.idUser'))
+    user = relationship("User", back_populates="resource")
