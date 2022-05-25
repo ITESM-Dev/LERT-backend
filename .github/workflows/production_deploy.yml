@@ -12,7 +12,7 @@ jobs:
           api:      http://api.us-south.cf.cloud.ibm.com
           space:    Production
           org:      ${{ secrets.CF_ORG }}
-          username: ${{ secrets.CF_USER }}
+          username: ${{ secrets.CF_USERNAME }}
           password: ${{ secrets.CF_PASSWORD }}
           manifest: manifest.yml
           validate: false
