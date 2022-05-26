@@ -5,7 +5,7 @@ class Config(object):
     TESTING = False
     CSRF_ENABLED = False
     HOST = '0.0.0.0'
-    PORT = 8000
+    PORT = int(os.getenv('PORT', 8000))
 
 class ProductionConfig(Config):
     DEBUG = False 

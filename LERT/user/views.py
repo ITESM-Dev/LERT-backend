@@ -19,4 +19,8 @@ except Exception as e:
 
 @user.route("/")
 def hello():
-    return "<h1 style='color:blue'>Hello There!</h1>"
+    return "hello"
+
+@user.route("/name")
+def name():
+    return "ricardo"
