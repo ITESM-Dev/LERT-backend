@@ -12,7 +12,7 @@ down: ## stop and remove Docker containers
 	@docker-compose down --remove-orphans
 .PHONY: pipi
 pipi: ## Install packages
-	@docker-compose -f docker-compose.yml exec app pipenv run pipenv install -d
+	@docker-compose -f docker-compose.yml exec lert pipenv run pipenv install -d
 .PHONY: rebuild
 rebuild:
 	@docker-compose down --remove-orphans
