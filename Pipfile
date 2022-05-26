@@ -9,6 +9,8 @@ gunicorn = "*"
 ibm_db = "*"
 sqlalchemy = "*"
 ibm-db-sa = "*"
+flask-login = "*"
+Flask-Principal = "*"
 
 [dev-packages]
 
