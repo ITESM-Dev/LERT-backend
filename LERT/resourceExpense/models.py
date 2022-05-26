@@ -1,11 +1,13 @@
-from LERT.db.database import db
+from LERT.db.database import Base
+from sqlalchemy import *
+from sqlalchemy.orm import relationship
 
-class ResourceExpense(db.Model):
+class ResourceExpense(Base):
     __tablename__ = 'ResourceExpense'
     
-    idResourceExpense = db.Column(db.Integer, primary_key=True)
-    idHourType = db.Column(db.Integer, db.ForeignKey("HourType.idHourType"))
-    idExpense = db.Column(db.Integer, db.ForeignKey("Expense.idExpense"))
-    rate = db.Column(db.Float)
-    expense = db.relationship("Expense", back_populates="resourceExpense")
-    hourType = db.relationship("HourType", back_populates="resourceExpense")
+    idResourceExpense = Column(Integer, primary_key=True)
+    idHourType = Column(Integer, ForeignKey('HourType.idHourType'))
+    idExpense = Column(Integer, ForeignKey('Expense.idExpense'))
+    rate = Column(Float)
+    expense = relationship("Expense", back_populates="resourceExpense")
+    hourType = relationship("HourType", back_populates="resourceExpense")

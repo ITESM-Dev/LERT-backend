@@ -1,14 +1,15 @@
-from LERT.db.database import db
+from LERT.db.database import Base
+from sqlalchemy.orm import relationship
+from sqlalchemy import *
 
+class BandType(Base):
+    __tablename__ = 'BandType'
 
-class BandType(db.Model):
-    __tablename__ = "BandType"
+    idBandType = Column(Integer, primary_key=True)
+    type = Column(String(200))
+    band = Column(String(50))
+    country = Column(String(120))
+    yearlyRate = Column(Float) 
+    dateToStart = Column(String(100))
 
-    idBandType = db.Column(db.Integer, primary_key=True)
-    type = db.Column(db.String(200))
-    band = db.Column(db.String(50))
-    country = db.Column(db.String(120))
-    yearlyRate = db.Column(db.Float) 
-    dateToStart = db.Column(db.String(100))
-
-    hourType = db.relationship("HourType", back_populates="bandType", uselist=False)
+    hourType = relationship('HourType', back_populates="bandType", uselist=False)

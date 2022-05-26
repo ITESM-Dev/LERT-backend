@@ -3,6 +3,7 @@ import ibm_db_dbi
 import os
 from sqlalchemy import *
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import declarative_base
 
 # Definition of ENV variables
 DB_NAME = os.environ.get("DBNAME")        
@@ -25,11 +26,12 @@ class Db2Connection(object):
 
     def _create_connection_sqlAlchemy(self):
         try:
-            e = create_engine(f"db2+ibm_db://{UID}:{DB_PASSWORD}@{DB_HOSTNAME}:50000/{DB_NAME}")
+            self.e = create_engine(f"db2+ibm_db://{UID}:{DB_PASSWORD}@{DB_HOSTNAME}:50000/{DB_NAME}")
             self.metadata = MetaData()
-            self.metadata.bind = e
-            Session = sessionmaker(e)
-            self.Session = Session()
+            self.Base = declarative_base(metadata=self.metadata)
+            self.metadata.bind = self.e
+            Session = sessionmaker(self.e)
+            self.session = Session()
             
         except Exception as e:
             print(e)

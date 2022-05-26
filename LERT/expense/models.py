@@ -1,26 +1,28 @@
-from LERT.db.database import db
+from LERT.db.database import Base
+from sqlalchemy import *
+from sqlalchemy.orm import relationship
 
-association_table_Expense_Resource = db.Table(
-    'association', db.metadata,
-    db.Column('idExpense', db.Integer, db.ForeignKey('Expense.idExpense')),
-    db.Column('idResource', db.Integer, db.ForeignKey('Resource.idSerial'))
+association_table_Expense_Resource = Table(
+    'association', Base.metadata,
+    Column('idExpense', Integer, ForeignKey('Expense.idExpense')),
+    Column('idResource', Integer, ForeignKey('Resource.idSerial'))
 )
 
-association_table_Expense_ICA = db.Table(
-    'association', db.metadata,
-    db.Column('idExpense', db.Integer, db.ForeignKey('Expense.idExpense')),
-    db.Column('idICA', db.Integer, db.ForeignKey('ICA.idICA'))
+association_table_Expense_ICA = Table(
+    'association2', Base.metadata,
+    Column('idExpense', Integer, ForeignKey('Expense.idExpense')),
+    Column('idICA', Integer, ForeignKey('ICA.idICA'))
 )
-class Expense(db.Model):
+class Expense(Base):
     __tablename__ = 'Expense'
 
-    idExpense = db.Column(db.Integer, primary_key=True)
-    idManager = db.Column(db.Integer, db.ForeignKey('Manager.idManager'))
-    idExpenseType = db.Column(db.Integer, db.ForeignKey('ExpenseType.idExpenseType'))
-    cost = db.Column(db.Float)
-    date = db.Column(db.String(100))
-    comment = db.Column(db.String(255))
-    resource = db.relationship("Resource", secondary=association_table_Expense_Resource)
-    ica = db.relationship("ICA", secondary=association_table_Expense_ICA)
-    expenseType = db.relationship("ExpenseType", back_populates="expense")
-    resourceExpense = db.relationship("ResourceExpense", back_populates="expense", uselist=False)
+    idExpense = Column(Integer, primary_key=True)
+    idManager = Column(Integer, ForeignKey('Manager.idManager'))
+    idExpenseType = Column(Integer, ForeignKey('ExpenseType.idExpenseType'))
+    cost = Column(Float)
+    date = Column(String(100))
+    comment = Column(String(255))
+    resource = relationship("Resource", secondary=association_table_Expense_Resource)
+    ica = relationship("ICA", secondary=association_table_Expense_ICA)
+    expenseType = relationship("ExpenseType", back_populates="expense")
+    resourceExpense = relationship("ResourceExpense", back_populates="expense", uselist=False)

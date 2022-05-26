@@ -1,9 +1,11 @@
-from LERT.db.database import db
+from LERT.db.database import Base
+from sqlalchemy import *
+from sqlalchemy.orm import relationship
 
-class ICAAdmin(db.Model):
+class ICAAdmin(Base):
     __tablename__='ICAAdmin'
 
-    idICA_Admin = db.Column(db.Integer, primary_key=True)
-    idUser = db.Column(db.Integer, db.ForeignKey('User.idUser'))
-    user = db.relationship("User", back_populates="ica_admin")
-    manager = db.relationship("Manager")
+    idICA_Admin = Column(Integer, primary_key=True)
+    idUser = Column(Integer, ForeignKey('User.idUser'))
+    user = relationship("User", back_populates="ica_admin")
+    manager = relationship("Manager")

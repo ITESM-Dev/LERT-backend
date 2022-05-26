@@ -1,11 +1,12 @@
-from LERT.db.database import db
+from LERT.db.database import Base
+from sqlalchemy.orm import relationship
+from sqlalchemy import *
 
-
-class ExpenseType(db.Model):
+class ExpenseType(Base):
     __tablename__ = "ExpenseType"
 
-    idExpenseType = db.Column(db.Integer, primary_key=True)
-    type = db.Column(db.String(200))
+    idExpenseType = Column(Integer, primary_key=True)
+    type = Column(String(200))
 
-    expense = db.relationship("Expense", back_populates="expenseType", uselist=False)
+    expense = relationship("Expense", back_populates="expenseType", uselist=False)
 

@@ -1,7 +1,20 @@
 from flask import Blueprint
+from sqlalchemy.orm import Session
+from LERT.db.database import connection
+from LERT.opmanager.models import OpManager
 
-OpManager = Blueprint('OpManager', __name__)
+opManager = Blueprint('opManager', __name__)
 
-@OpManager.route("/")
+try:
+    session = Session(connection.e)
+
+    #opManager2 = OpManager(idUser=1, country="Mexico", status="Active")
+    #session.add(opManager2)
+    #session.commit() 
+    session.close()
+except Exception as e:
+    print(e)
+
+@opManager.route("/")
 def hello():
     return "<h1 style='color:blue'>Hello There!</h1>"

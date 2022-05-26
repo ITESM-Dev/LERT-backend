@@ -1,14 +1,17 @@
-from LERT.db.database import db
+from LERT.db.database import Base
+from sqlalchemy.orm import relationship
+from sqlalchemy import *
 
 
-class OpManager(db.Model):
+class OpManager(Base):
     __tablename__ = 'OpManager'
 
-    idOPManager = db.Column(db.Integer, primary_key=True)
-    idUser = db.Column(db.Integer, db.ForeignKey('User.idUser'))
-    status = db.Column(db.String(120))
+    idOPManager = Column(Integer, primary_key=True)
+    idUser = Column(Integer, ForeignKey('User.idUser'))
+    country = Column(String(120))
+    status = Column(String(120))
 
-    user = db.relationship("User", back_populates="opManager")
-    manager = db.relationship("Manager")
+    user = relationship("User", back_populates="opManager")
+    manager = relationship("Manager")
 
     
