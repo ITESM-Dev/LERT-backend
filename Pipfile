@@ -11,6 +11,7 @@ sqlalchemy = "*"
 ibm-db-sa = "*"
 flask-login = "*"
 Flask-Principal = "*"
+argon2-cffi="*"
 
 [dev-packages]
 
