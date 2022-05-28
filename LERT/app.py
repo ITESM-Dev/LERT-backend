@@ -1,11 +1,14 @@
+from crypt import methods
 import json
 import os
 import secrets
 import time
+from unittest import result
 from argon2 import PasswordHasher
-from flask import jsonify, Flask
+from flask import jsonify, Flask, request
 import flask
-from flask_login import LoginManager
+from flask_login import LoginManager, login_required, login_user, logout_user
+import flask_login
 from sqlalchemy.orm import Session
 from sqlalchemy import *
 from LERT.db import database, session
@@ -52,21 +55,6 @@ app.register_blueprint(expenseType)
 app.register_blueprint(hourType)
 app.register_blueprint(bandType)
 
-#sentence = "SELECT * FROM OOLONG"
-#rows = connection.get_all(sentence)
-#print(rows)
-#connection._create_connection_sqlAlchemy()
-
-# @app.route("/")
-# def hello():
-#     return "<h1 style='color:blue'>Hello There!</h1>"
-
-# @app.route("/user")
-# def get_user():
-#     Dictionary ={'id':'eduCBA' , 'user_name':'Premium' , 'user_last_name':'2709 days'}
-#     return jsonify(Dictionary)
-
-
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -75,23 +63,23 @@ VIDA_TOKEN = 1000 * 60 * 3
 session2 = Session(connection.e)
 
 @login_manager.user_loader
-def load_user(user_id):  
-    user = session2.query(User).get(user_id)
+def load_user(idUser):  
+    user = session2.query(User).get(idUser)
 
     if user == None:
-        return
+        return "User not found", 401
 
     return user
 
 @login_manager.request_loader
-def request_loader():
+def request_loader(request):
     ph = PasswordHasher()
 
     try:
-        userToken = flask.request.headers.get('token')
-        userMail = flask.request.headers.get('mail')
+        userToken = request.headers.get('token')
+        userMail = request.headers.get('mail')
     except Exception as e:
-        print(e)
+        return "No credentials", 401
 
     try:
         userDBQuery = session2.query(User).filter_by(mail = userMail)
@@ -102,11 +90,13 @@ def request_loader():
 
     tokenDB = userDB.token
 
+    
     try:
-        ph.verify(userToken, tokenDB)
+        ph.verify(tokenDB, userToken)
 
-    except Exception as e:
-        return "Token is not valid", 401
+    except:
+        return "Token not valid", 401
+    
 
     currentTimestamp = time.time()
 
@@ -115,6 +105,11 @@ def request_loader():
 
     userDBQuery.\
         update({User.expiration: currentTimestamp}, synchronize_session='fetch')
+
+    
+    result = User()
+    result.id = userMail
+    return result
 
     return "Valid User and Token", 200
 
@@ -148,9 +143,27 @@ def login():
     userDBQuery.\
         update({User.expiration: expiration}, synchronize_session='fetch')
 
-    session2.commit()    
+    session2.commit()  
 
-    return "Valid credentials", 200
+    return jsonify(token=token, caducidad=VIDA_TOKEN), 200
+
+@app.route('/protegido')
+@login_required
+def protegido():
+
+    return("Hola")
+
+@login_manager.unauthorized_handler
+def handler():
+    return 'No autorizado', 401
+
+@app.route("/logout")
+@login_required
+def logout():
+    userDBQuery = session2.query(User).filter_by(mail = flask_login.current_user.id)
+    userDBQuery.\
+        update({User.expiration: 0}, synchronize_session='fetch')
+    return "Logged Out", 200
 
 session2.close()
 
