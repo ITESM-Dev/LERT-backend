@@ -5,6 +5,7 @@ from LERT.db.database import connection
 from sqlalchemy.orm import Session
 from LERT.user.models import User
 import flask
+from argon2 import PasswordHasher
 
 user = Blueprint('user', __name__)
 
@@ -16,15 +17,18 @@ def hello():
 def name():
     return "ricardo"
 
-@user.route("/signUp", methods=['POST'])
+@user.route("/signUp", methods=['POST', 'GET'])
 def createUser():
+    ph = PasswordHasher()
+
     statusCode = flask.Response(status=201)
     userName = flask.request.form['name']
     userMail = flask.request.form['mail']
-    userPassword = flask.request.form['password']
-    userToken = flask.request.form['token']
+    userPassword = ph.hash(flask.request.form['password'])
+    userToken = ph.hash(flask.request.form['token'])
     userExpiration = flask.request.form['expiration']
     userRole = flask.request.form['role']
+
     
     try:
         session = Session(connection.e)
@@ -34,7 +38,7 @@ def createUser():
         session.add(user1)
         session.commit() 
         session.close()
-
+        
     except Exception as e:
         print(e)
 
