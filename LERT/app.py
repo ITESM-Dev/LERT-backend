@@ -74,8 +74,6 @@ VIDA_TOKEN = 1000 * 60 * 3
 
 session2 = Session(connection.e)
 
-
-
 @login_manager.user_loader
 def load_user(user_id):  
     user = session2.query(User).get(user_id)
@@ -84,27 +82,42 @@ def load_user(user_id):
         return
 
     return user
-"""
+
 @login_manager.request_loader
 def request_loader():
     ph = PasswordHasher()
 
-    userToken = flask.request.headers.get('token')
+    try:
+        userToken = flask.request.headers.get('token')
+        userMail = flask.request.headers.get('mail')
+    except Exception as e:
+        print(e)
+
+    try:
+        userDBQuery = session2.query(User).filter_by(mail = userMail)
+        userDB = userDBQuery.first()
+        userMail = userDB.mail
+    except Exception as e:
+        return "Email is not valid", 401 
+
     tokenDB = userDB.token
 
     try:
         ph.verify(userToken, tokenDB)
 
     except Exception as e:
-        print(e)
-        return
-
+        return "Token is not valid", 401
 
     currentTimestamp = time.time()
 
     if(userDB.expiration + VIDA_TOKEN < currentTimestamp):
-        pass
-"""
+        return 
+
+    userDBQuery.\
+        update({User.expiration: currentTimestamp}, synchronize_session='fetch')
+
+    return "Valid User and Token", 200
+
 
 @app.route('/login', methods=['POST'])
 def login():
