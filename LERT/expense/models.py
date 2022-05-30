@@ -22,7 +22,9 @@ class Expense(Base):
     cost = Column(Float)
     date = Column(String(100))
     comment = Column(String(255))
+    idCurrentPeriod = Column(Integer, ForeignKey("CurrentPeriod.idCurrentPeriod"))
     resource = relationship("Resource", secondary=association_table_Expense_Resource)
     ica = relationship("ICA", secondary=association_table_Expense_ICA)
     expenseType = relationship("ExpenseType", back_populates="expense")
     resourceExpense = relationship("ResourceExpense", back_populates="expense", uselist=False)
+    

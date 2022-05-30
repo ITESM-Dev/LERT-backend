@@ -26,6 +26,7 @@ from LERT.icaAdmin.views import icaAdmin
 from LERT.resource.views import resource
 from LERT.expense.views import expense
 from LERT.resourceExpense.views import resourceExpense
+from LERT.currentPeriod.views import currentPeriod
 from LERT.db.database import connection
 from db2_Connection import Db2Connection
 import sys
@@ -57,6 +58,7 @@ app.register_blueprint(manager)
 app.register_blueprint(expenseType)
 app.register_blueprint(hourType)
 app.register_blueprint(bandType)
+app.register_blueprint(currentPeriod)
 
 login_manager = LoginManager()
 login_manager.init_app(app)

@@ -13,6 +13,7 @@ class User(Base, UserMixin):
     token = Column(String(100))
     expiration = Column(Integer)
     role = Column(String(100))
+    country = Column(String(100))
     admin = relationship("Administrator", back_populates="user", uselist=False)
     ica_admin = relationship("ICAAdmin", back_populates="user", uselist=False)
     opManager = relationship("OpManager", back_populates="user", uselist=False)
