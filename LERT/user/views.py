@@ -1,5 +1,7 @@
 from crypt import methods
 from flask import Blueprint
+from flask_login import login_required
+from LERT.authorization.roles import admin_permission
 #from LERT.db.session import session
 from LERT.db.database import connection
 from sqlalchemy.orm import Session
@@ -14,6 +16,8 @@ def hello():
     return "hello"
 
 @user.route("/name")
+@admin_permission.require(http_exception=403)
+@login_required
 def name():
     return "ricardo"
 
