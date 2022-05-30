@@ -12,6 +12,7 @@ from LERT.opmanager.models import OpManager
 from LERT.resource.models import Resource
 from LERT.resourceExpense.models import ResourceExpense
 from LERT.user.models import User
+from LERT.currentPeriod.models import CurrentPeriod
 
 try:
 
