@@ -1,4 +1,5 @@
 from crypt import methods
+import imp
 import json
 import os
 import secrets
@@ -7,7 +8,7 @@ from unittest import result
 from argon2 import PasswordHasher
 from flask import jsonify, Flask, request
 import flask
-from flask_login import LoginManager, login_required, login_user, logout_user
+from flask_login import LoginManager, login_required
 import flask_login
 from sqlalchemy.orm import Session
 from sqlalchemy import *
@@ -28,8 +29,10 @@ from LERT.resourceExpense.views import resourceExpense
 from LERT.db.database import connection
 from db2_Connection import Db2Connection
 import sys
+from flask_principal import *
 
 app = Flask(__name__, static_url_path='')
+app.secret_key = secrets.token_urlsafe(16)
 
 def create_app():
 
@@ -88,8 +91,8 @@ def request_loader(request):
     except Exception as e:
         return "Email is not valid", 401 
 
+    userRole = userDB.role
     tokenDB = userDB.token
-
     
     try:
         ph.verify(tokenDB, userToken)
@@ -109,10 +112,32 @@ def request_loader(request):
     
     result = User()
     result.id = userMail
+    result.role = userRole
     return result
 
-    return "Valid User and Token", 200
+principals = Principal(app)
+admin_permission = Permission(RoleNeed('Admin'))
 
+@identity_loaded.connect_via(app)
+def on_identity_loaded(sender, identity):
+
+    try:
+
+        current_user = flask_login.current_user
+        # Set the identity user object
+        identity.user = current_user
+        print(current_user.role, file=sys.stderr)
+
+        # Add the UserNeed to the identity
+        if hasattr(current_user, 'id'):
+            identity.provides.add(UserNeed(current_user.id))
+
+        # Assuming the User model has a list of roles, update the
+        # identity with the roles that the user provides
+        if hasattr(current_user, 'role'):
+            identity.provides.add(RoleNeed(current_user.role))
+    except Exception as e:
+        return "Permission Denied", 401
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -145,13 +170,21 @@ def login():
 
     session2.commit()  
 
+    identity_changed.send(current_app._get_current_object(), identity=Identity(userDB.idUser))
+
     return jsonify(token=token, caducidad=VIDA_TOKEN), 200
 
 @app.route('/protegido')
 @login_required
+@admin_permission.require(http_exception=403)
 def protegido():
 
-    return("Hola")
+    return(flask_login.current_user.role)
+
+@app.errorhandler(403)
+def permission_denied(e):
+    return "Forbidden", 403
+    
 
 @login_manager.unauthorized_handler
 def handler():
