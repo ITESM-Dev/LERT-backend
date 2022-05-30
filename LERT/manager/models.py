@@ -9,6 +9,7 @@ class Manager(Base):
     idUser = Column(Integer, ForeignKey('User.idUser'))
     idOPManager = Column(Integer, ForeignKey('OpManager.idOPManager'))
     idICA_Admin = Column(Integer, ForeignKey('ICAAdmin.idICA_Admin'))
+    recoveryStatus = Column(String(30))
 
     user = relationship("User", back_populates="manager")
     expense = relationship("Expense")
