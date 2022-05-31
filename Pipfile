@@ -13,6 +13,7 @@ flask-login = "*"
 Flask-Principal = "*"
 argon2-cffi="*"
 flask-cors = "*"
+requests = "*"
 
 [dev-packages]
 
