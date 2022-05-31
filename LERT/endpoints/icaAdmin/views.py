@@ -1,7 +1,7 @@
 from flask import Blueprint
 from sqlalchemy.orm import Session
 from LERT.db.database import connection
-from LERT.icaAdmin.models import ICAAdmin
+from LERT.endpoints.icaAdmin.models import ICAAdmin
 
 icaAdmin = Blueprint('icaAdmin', __name__)
 

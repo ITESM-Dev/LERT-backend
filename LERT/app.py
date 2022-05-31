@@ -1,37 +1,33 @@
+from LERT.db import database, session
+from LERT.endpoints.ica.views import ica
+from LERT.endpoints.opmanager.views import opManager
+from LERT.endpoints.manager.views import manager
+from LERT.endpoints.expenseType.views import expenseType
+from LERT.endpoints.hourType.views import hourType
+from LERT.endpoints.bandType.views import bandType
+from LERT.endpoints.user.models import User
+from LERT.endpoints.user.views import user
+from LERT.endpoints.administrator.views import admin
+from LERT.endpoints.icaAdmin.views import icaAdmin
+from LERT.endpoints.resource.views import resource
+from LERT.endpoints.expense.views import expense
+from LERT.endpoints.resourceExpense.views import resourceExpense
+from LERT.endpoints.currentPeriod.views import currentPeriod
+from LERT.db.database import connection
 from crypt import methods
-import imp
-import json
 import os
 import secrets
 import time
-from unittest import result
-from argon2 import PasswordHasher
-from flask import jsonify, Flask, request
+from flask import Flask
 import flask
-from flask_login import LoginManager, login_required
-import flask_login
 from sqlalchemy.orm import Session
 from sqlalchemy import *
-from LERT.db import database, session
-from LERT.ica.views import ica
-from LERT.opmanager.views import opManager
-from LERT.manager.views import manager
-from LERT.expenseType.views import expenseType
-from LERT.hourType.views import hourType
-from LERT.bandType.views import bandType
-from LERT.user.models import User
-from LERT.user.views import user
-from LERT.administrator.views import admin
-from LERT.icaAdmin.views import icaAdmin
-from LERT.resource.views import resource
-from LERT.expense.views import expense
-from LERT.resourceExpense.views import resourceExpense
-from LERT.currentPeriod.views import currentPeriod
-from LERT.db.database import connection
-from db2_Connection import Db2Connection
 import sys
-from flask_principal import *
 from flask_cors import CORS, cross_origin
+from argon2 import PasswordHasher
+from flask_principal import *
+from flask_login import LoginManager, login_required
+import flask_login
 
 app = Flask(__name__, static_url_path='')
 app.secret_key = secrets.token_urlsafe(16)

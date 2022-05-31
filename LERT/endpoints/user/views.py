@@ -1,16 +1,16 @@
 from crypt import methods
 from flask import Blueprint
 from flask_login import login_required
-from LERT.authorization.roles import admin_permission
+from LERT.endpoints.authorization.roles import admin_permission
 #from LERT.db.session import session
 from LERT.db.database import connection
 from sqlalchemy.orm import Session
-from LERT.user.models import User
-from LERT.administrator.models import Administrator
-from LERT.opmanager.models import OpManager
-from LERT.resource.models import Resource
-from LERT.manager.models import Manager
-from LERT.icaAdmin.models import ICAAdmin
+from LERT.endpoints.user.models import User
+from LERT.endpoints.administrator.models import Administrator
+from LERT.endpoints.opmanager.models import OpManager
+from LERT.endpoints.resource.models import Resource
+from LERT.endpoints.manager.models import Manager
+from LERT.endpoints.icaAdmin.models import ICAAdmin
 import flask
 from argon2 import PasswordHasher
 

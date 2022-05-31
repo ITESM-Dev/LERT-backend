@@ -1,7 +1,7 @@
 from flask import Blueprint
 from sqlalchemy.orm import Session
 from LERT.db.database import connection
-from LERT.administrator.models import Administrator
+from LERT.endpoints.administrator.models import Administrator
 
 admin = Blueprint('admin', __name__)
 
