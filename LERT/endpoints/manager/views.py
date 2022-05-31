@@ -3,8 +3,8 @@ import flask
 import flask_login
 from sqlalchemy.orm import Session
 from LERT.db.database import connection
-from LERT.manager.models import Manager
-from LERT.user.models import User
+from LERT.endpoints.manager.models import Manager
+from LERT.endpoints.user.models import User
 
 manager = Blueprint('manager', __name__)
 
