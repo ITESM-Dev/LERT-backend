@@ -1,7 +1,25 @@
 from flask import Blueprint
+import flask
+import flask_login
+from sqlalchemy.orm import Session
+from LERT.db.database import connection
+from LERT.manager.models import Manager
+from LERT.user.models import User
 
 manager = Blueprint('manager', __name__)
 
-@manager.route("/")
-def hello():
-    return "<h1 style='color:blue'>Hello There!</h1>"
+session = Session(connection.e)
+
+@manager.route("/setOpManager")
+def setOpManager():
+    managerMail = flask.request.form['ManagerMail']
+    opManagerID = flask_login.current_user.id
+
+    userDBQuery = session.query(User).filter_by(mail = managerMail)
+    userDBID = userDBQuery.first().id
+
+    session.query(Manager).\
+        filter_by(idManager = userDBID).\
+        update({Manager.idOPManager: opManagerID})
+
+session.close()
