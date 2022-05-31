@@ -16,26 +16,16 @@ from argon2 import PasswordHasher
 
 user = Blueprint('user', __name__)
 
-@user.route("/")
-def hello():
-    return "hello"
-
-@user.route("/name")
-@admin_permission.require(http_exception=403)
-@login_required
-def name():
-    return "ricardo"
-
 @user.route("/signUp", methods=['POST', 'GET'])
 def createUser():
     ph = PasswordHasher()
 
     statusCode = flask.Response(status=201)
-    userName = flask.request.form['name']
-    userMail = flask.request.form['mail']
-    userPassword = ph.hash(flask.request.form['password'])
-    userRole = flask.request.form['role']
-    userCountry = flask.request.form['country']
+    userName = flask.request.json['name']
+    userMail = flask.request.json['mail']
+    userPassword = ph.hash(flask.request.json['password'])
+    userRole = flask.request.json['role']
+    userCountry = flask.request.json['country']
     
     try:
         session = Session(connection.e)
