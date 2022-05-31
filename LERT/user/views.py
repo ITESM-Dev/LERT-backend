@@ -45,7 +45,7 @@ def createUser():
         session.commit() 
         
     except Exception as e:
-        print(e)
+        return "Email already exists", 401
 
     userDB = session.query(User).filter_by(mail = userMail).first()
 
