@@ -31,9 +31,12 @@ from LERT.db.database import connection
 from db2_Connection import Db2Connection
 import sys
 from flask_principal import *
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__, static_url_path='')
 app.secret_key = secrets.token_urlsafe(16)
+
+CORS(app)
 
 def create_app():
 
@@ -142,6 +145,7 @@ def on_identity_loaded(sender, identity):
         return "Permission Denied", 401
 
 @app.route('/login', methods=['POST'])
+@cross_origin()
 def login():
 
     try:
@@ -186,6 +190,7 @@ def login():
     return result, 200
 
 @app.route('/protegido')
+@cross_origin()
 @login_required
 @admin_permission.require(http_exception=403)
 def protegido():
@@ -202,6 +207,7 @@ def handler():
     return 'No autorizado', 401
 
 @app.route("/logout")
+@cross_origin() 
 @login_required
 def logout():
     userDBQuery = session2.query(User).filter_by(mail = flask_login.current_user.id)
