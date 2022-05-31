@@ -145,7 +145,7 @@ def on_identity_loaded(sender, identity):
 def login():
 
     try:
-        userMail = flask.request.form['mail']
+        userMail = flask.request.json['mail']
         userDBQuery = session2.query(User).filter_by(mail = userMail)
         userDB = userDBQuery.first()
         userMail = userDB.mail
@@ -155,7 +155,7 @@ def login():
     ph = PasswordHasher()
 
     try:
-        userPassword = flask.request.form['password']
+        userPassword = flask.request.json['password']
         passwordDB = userDB.password 
         ph.verify(passwordDB, userPassword)
     except:
