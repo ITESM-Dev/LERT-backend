@@ -8,7 +8,7 @@ class User(Base, UserMixin):
 
     idUser = Column(Integer, primary_key=True)
     name = Column(String(100))
-    mail = Column(String(100), unique=True)
+    mail = Column(String(100))
     password = Column(String(100))
     token = Column(String(100))
     expiration = Column(Integer)
