@@ -179,6 +179,7 @@ def login():
         "name": userDB.name,
         "mail": userDB.mail,
         "role": userDB.role,
+        "country": userDB.country,
         "token": token
     }
 
