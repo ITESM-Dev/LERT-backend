@@ -174,7 +174,15 @@ def login():
 
     identity_changed.send(current_app._get_current_object(), identity=Identity(userDB.idUser))
 
-    return jsonify(token=token, caducidad=VIDA_TOKEN), 200
+    result = {
+        "id": userDB.idUser,
+        "name": userDB.name,
+        "mail": userDB.mail,
+        "role": userDB.role,
+        "token": token
+    }
+
+    return result, 200
 
 @app.route('/protegido')
 @login_required
