@@ -118,6 +118,10 @@ def request_loader(request):
 
 principals = Principal(app)
 admin_permission = Permission(RoleNeed('Admin'))
+opManager_permission = Permission(RoleNeed('OpManager'))
+manager_permission = Permission(RoleNeed('Manager'))
+icaAdmin_permission = Permission(RoleNeed('IcaAdmin'))
+manager_or_IcaAdmin = Permission(RoleNeed('Manager'), RoleNeed('IcaAdmin'))
 
 @identity_loaded.connect_via(app)
 def on_identity_loaded(sender, identity):
@@ -143,7 +147,7 @@ def on_identity_loaded(sender, identity):
 @app.route('/login', methods=['POST'])
 @cross_origin()
 def login():
-
+    
     try:
         userMail = flask.request.json['mail']
         userDBQuery = session2.query(User).filter_by(mail = userMail)
@@ -188,7 +192,6 @@ def login():
 @app.route('/protegido')
 @cross_origin()
 @login_required
-@admin_permission.require(http_exception=403)
 def protegido():
 
     return(flask_login.current_user.role)
