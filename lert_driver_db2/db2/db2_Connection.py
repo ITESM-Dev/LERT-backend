@@ -26,7 +26,11 @@ class Db2Connection(object):
 
     def _create_connection_sqlAlchemy(self):
         try:
-            self.e = create_engine(f"db2+ibm_db://{UID}:{DB_PASSWORD}@{DB_HOSTNAME}:50000/{DB_NAME}")
+            if os.environ.get('ENVIRONMENT') == "dev":
+                db_string = f"db2+ibm_db://{UID}:{DB_PASSWORD}@{DB_HOSTNAME}:50000/{DB_NAME}"
+            elif os.environ.get('ENVIRONMENT') == "prod":
+                db_string = f"db2+ibm_db://{UID}:{DB_PASSWORD}@{DB_HOSTNAME}:32733/{DB_NAME};SECURITY=SSL"
+            self.e = create_engine(db_string)            
             self.metadata = MetaData()
             self.Base = declarative_base(metadata=self.metadata)
             self.metadata.bind = self.e
