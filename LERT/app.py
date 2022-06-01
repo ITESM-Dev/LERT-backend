@@ -22,14 +22,14 @@ app = Flask(__name__, static_url_path='')
 
 def create_app():
 
-  if os.getenv('ENVIRONMENT') == 'dev':
+    if os.getenv('ENVIRONMENT') == 'dev':
         app.config.from_object('config.DevelopmentConfig')
         print(os.getenv('ENVIRONMENT'))
     elif os.getenv('ENVIRONMENT') == 'prod':
         app.config.from_object('config.DevelopmentConfig')
         print(os.getenv('ENVIRONMENT'))
-    #database
-    #session
+    database
+    session
 
 app.register_blueprint(user)
 app.register_blueprint(admin)
