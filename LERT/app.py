@@ -130,9 +130,8 @@ manager_or_IcaAdmin = Permission(RoleNeed('Manager'), RoleNeed('IcaAdmin'))
 @identity_loaded.connect_via(app)
 def on_identity_loaded(sender, identity):
 
-    userDBQuery = session2.query(User).filter_by(idUser = identity.id).first()
-
     try:
+        userDBQuery = session2.query(User).filter_by(idUser = identity.id).first()
 
         # Add the UserNeed to the identity
         if hasattr(identity, 'id'):
@@ -193,7 +192,7 @@ def login():
 @app.route('/protegido')
 @cross_origin()
 @login_required
-@manager_permission.require(http_exception=403)
+@admin_permission.require(http_exception=403)
 def protegido():
 
     return(flask_login.current_user.role)
