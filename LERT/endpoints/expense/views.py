@@ -1,4 +1,5 @@
 from crypt import methods
+from sys import stderr
 from flask import Blueprint
 import flask_login
 from flask_cors import cross_origin
@@ -6,12 +7,16 @@ import flask
 from sqlalchemy.orm import Session
 from LERT.db.database import connection
 from LERT.endpoints.expense.models import Expense
+from LERT.endpoints.expense.models import association_table_Expense_Resource, association_table_Expense_ICA
+from LERT.endpoints.resource.models import Resource
 from LERT.endpoints.expenseType.models import ExpenseType
+from LERT.endpoints.ica.models import ICA
 from LERT.endpoints.currentPeriod.models import CurrentPeriod
 from LERT.endpoints.manager.models import Manager
 from LERT.endpoints.user.models import User
 from LERT.endpoints.hourType.models import HourType
 from LERT.endpoints.resourceExpense.models import ResourceExpense
+
 import requests
 
 expense = Blueprint('expense', __name__)
@@ -27,6 +32,8 @@ def createExpense():
     # TODO tipo de dato de date -> Date !String
             
     statusCode = flask.Response(status=201)
+    icaCodeReq = flask.request.json['icaCode']
+    mailReq = flask.request.json['mail']
     costReq = int(flask.request.json['cost'])
     dateReq = flask.request.json['date']
     # y, m, d = startDateReq.split('-')
@@ -69,6 +76,24 @@ def createExpense():
             resourceExpense1 = ResourceExpense(idHourType = hourTypeID, idExpense = expense1.idExpense, rate = rateReq)
             session.add(resourceExpense1)
             session.commit() 
+
+        resourceUser = session.query(User).filter_by(mail = mailReq).first()
+        resourceUserID = resourceUser.idUser
+        resourceQuery = session.query(Resource).filter_by(idUser = resourceUserID).first()
+        resourceID = resourceQuery.idSerial
+
+        association_expense_resource = association_table_Expense_Resource.insert().values(idExpense = expense1.idExpense, idResource = resourceID)
+        session.execute(association_expense_resource) 
+        session.commit()
+
+        icaQuery = session.query(ICA).filter_by(icaCode = icaCodeReq).first()
+        icaID = icaQuery.idICA
+      
+        
+        association_expense_ica = association_table_Expense_ICA.insert().values(idExpense = expense1.idExpense, idICA = icaID)
+        session.execute(association_expense_ica) 
+        session.commit()
+        
         
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        

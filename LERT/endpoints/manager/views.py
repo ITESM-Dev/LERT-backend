@@ -11,6 +11,7 @@ from LERT.endpoints.icaAdmin.models import ICAAdmin
 from LERT.endpoints.user.models import User
 from LERT.endpoints.authorization.roles import opManager_permission, icaAdmin_permission
 from flask_cors import cross_origin
+import requests
 
 manager = Blueprint('manager', __name__)
 
@@ -20,20 +21,27 @@ session = Session(connection.e)
 @cross_origin()
 @flask_login.login_required
 def setOpManager():
-    managerMail = flask.request.json['managerMail']
-    opManagerMail = flask_login.current_user.id
+    try:
+        managerMail = flask.request.json['managerMail']
+        opManagerMail = flask_login.current_user.id
 
-    managerQuery = session.query(User).filter_by(mail = managerMail)
-    opManagerUserQuery = session.query(User).filter_by(mail = opManagerMail)
-    opManagerUserID = opManagerUserQuery.first().idUser
-    opManagerQuery = session.query(OpManager).filter_by(idUser = opManagerUserID)
-    opManagerID = opManagerQuery.first().idOPManager
-    managerID = managerQuery.first().idUser
-    
-    session.query(Manager).\
-        filter_by(idManager = managerID).\
-        update({Manager.idOPManager: opManagerID})
-    session.commit()
+        managerQuery = session.query(User).filter_by(mail = managerMail)
+        opManagerUserQuery = session.query(User).filter_by(mail = opManagerMail)
+        opManagerUserID = opManagerUserQuery.first().idUser
+        opManagerQuery = session.query(OpManager).filter_by(idUser = opManagerUserID)
+        opManagerID = opManagerQuery.first().idOPManager
+        managerID = managerQuery.first().idUser
+
+        
+        session.query(Manager).\
+            filter_by(idUser = managerID).\
+            update({Manager.idOPManager: opManagerID})
+
+        session.commit()
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e)
 
     return "Manager assigned to OpManager", 200
 
@@ -41,20 +49,25 @@ def setOpManager():
 @cross_origin()
 @flask_login.login_required
 def setIcaAdmin():
-    managerMail = flask.request.json['managerMail']
-    icaAdminMail = flask_login.current_user.id
+    try:
+        managerMail = flask.request.json['managerMail']
+        icaAdminMail = flask_login.current_user.id
 
-    managerQuery = session.query(User).filter_by(mail = managerMail)
-    icaAdminUserQuery = session.query(User).filter_by(mail = icaAdminMail)
-    icaAdminUserID = icaAdminUserQuery.first().idUser
-    icaAdminQuery = session.query(ICAAdmin).filter_by(idUser = icaAdminUserID)
-    icaAdminID = icaAdminQuery.first().idICA_Admin
-    managerID = managerQuery.first().idUser
-    
-    session.query(Manager).\
-        filter_by(idManager = managerID).\
-        update({Manager.idICA_Admin: icaAdminID})
-    session.commit()
+        managerQuery = session.query(User).filter_by(mail = managerMail)
+        icaAdminUserQuery = session.query(User).filter_by(mail = icaAdminMail)
+        icaAdminUserID = icaAdminUserQuery.first().idUser
+        icaAdminQuery = session.query(ICAAdmin).filter_by(idUser = icaAdminUserID)
+        icaAdminID = icaAdminQuery.first().idICA_Admin
+        managerID = managerQuery.first().idUser
+        
+        session.query(Manager).\
+            filter_by(idUser = managerID).\
+            update({Manager.idICA_Admin: icaAdminID})
+        session.commit()
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e)
 
     return "Manager assigned to IcaAdmin", 200
 
