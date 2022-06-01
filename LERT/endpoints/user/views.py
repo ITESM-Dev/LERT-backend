@@ -24,13 +24,14 @@ def createUser():
     userName = flask.request.json['name']
     userMail = flask.request.json['mail']
     userPassword = ph.hash(flask.request.json['password'])
+    userBand = int(flask.request.json['band'])
     userRole = flask.request.json['role']
     userCountry = flask.request.json['country']
     
     try:
         session = Session(connection.e)
 
-        user1 = User(name = userName, mail = userMail, password = userPassword, role = userRole, country = userCountry)
+        user1 = User(name = userName, mail = userMail, password = userPassword, band = userBand, role = userRole, country = userCountry)
         session.add(user1)
         session.commit() 
         
