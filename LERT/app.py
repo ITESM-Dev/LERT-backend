@@ -180,6 +180,7 @@ def login():
         "id": userDB.idUser,
         "name": userDB.name,
         "mail": userDB.mail,
+        "band": userDB.band,
         "role": userDB.role,
         "country": userDB.country,
         "token": token
