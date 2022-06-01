@@ -1,8 +1,9 @@
 from LERT.db.database import Base
 from sqlalchemy import *
 from sqlalchemy.orm import relationship
+from flask_login import UserMixin
 
-class User(Base):
+class User(Base, UserMixin):
     __tablename__='User'
 
     idUser = Column(Integer, primary_key=True)
@@ -12,6 +13,7 @@ class User(Base):
     token = Column(String(100))
     expiration = Column(Integer)
     role = Column(String(100))
+    country = Column(String(100))
     admin = relationship("Administrator", back_populates="user", uselist=False)
     ica_admin = relationship("ICAAdmin", back_populates="user", uselist=False)
     opManager = relationship("OpManager", back_populates="user", uselist=False)

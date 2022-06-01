@@ -1,7 +1,7 @@
 from flask import Blueprint
 from sqlalchemy.orm import Session
 from LERT.db.database import connection
-from LERT.opmanager.models import OpManager
+from LERT.endpoints.opmanager.models import OpManager
 
 opManager = Blueprint('opManager', __name__)
 
