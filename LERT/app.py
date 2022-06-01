@@ -114,9 +114,13 @@ def request_loader(request):
     result = User()
     result.id = userMail
     result.role = userRole
+
+    identity_changed.send(current_app._get_current_object(), identity=Identity(userDB.idUser))
+
     return result
 
 principals = Principal(app)
+principals._init_app(app)
 admin_permission = Permission(RoleNeed('Admin'))
 opManager_permission = Permission(RoleNeed('OpManager'))
 manager_permission = Permission(RoleNeed('Manager'))
@@ -126,23 +130,20 @@ manager_or_IcaAdmin = Permission(RoleNeed('Manager'), RoleNeed('IcaAdmin'))
 @identity_loaded.connect_via(app)
 def on_identity_loaded(sender, identity):
 
+    userDBQuery = session2.query(User).filter_by(idUser = identity.id).first()
+
     try:
 
-        current_user = flask_login.current_user
-        # Set the identity user object
-        identity.user = current_user
-        print(current_user.role, file=sys.stderr)
-
         # Add the UserNeed to the identity
-        if hasattr(current_user, 'id'):
-            identity.provides.add(UserNeed(current_user.id))
+        if hasattr(identity, 'id'):
+            identity.provides.add(UserNeed(userDBQuery.idUser))
 
         # Assuming the User model has a list of roles, update the
         # identity with the roles that the user provides
-        if hasattr(current_user, 'role'):
-            identity.provides.add(RoleNeed(current_user.role))
+        
+        identity.provides.add(RoleNeed(userDBQuery.role))
     except Exception as e:
-        return "Permission Denied", 401
+        return e
 
 @app.route('/login', methods=['POST'])
 @cross_origin()
@@ -176,7 +177,7 @@ def login():
 
     session2.commit()  
 
-    identity_changed.send(current_app._get_current_object(), identity=Identity(userDB.idUser))
+    print(userDB.mail, file=sys.stderr)
 
     result = {
         "id": userDB.idUser,
@@ -192,6 +193,7 @@ def login():
 @app.route('/protegido')
 @cross_origin()
 @login_required
+@manager_permission.require(http_exception=403)
 def protegido():
 
     return(flask_login.current_user.role)
