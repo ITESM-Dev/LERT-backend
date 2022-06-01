@@ -4,6 +4,9 @@ from db2_Connection import Db2Connection
 from sqlalchemy import *
 
 connection = Db2Connection()
-connection._create_connection_sqlAlchemy()
-Base = connection.Base
 
+try:
+    connection._create_connection_sqlAlchemy()
+    Base = connection.Base
+except Exception as e:
+    print(e)

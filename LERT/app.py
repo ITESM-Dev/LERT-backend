@@ -42,8 +42,9 @@ def create_app():
     elif os.getenv('ENVIRONMENT') == 'prod':
         app.config.from_object('config.DevelopmentConfig')
         print(os.getenv('ENVIRONMENT'))
-        database
-        session
+
+    database
+    session
 
 app.register_blueprint(user)
 app.register_blueprint(admin)
