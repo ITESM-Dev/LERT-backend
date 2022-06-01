@@ -14,6 +14,7 @@ class User(Base, UserMixin):
     expiration = Column(Integer)
     role = Column(String(100))
     country = Column(String(100))
+    band = Column(Integer)
     admin = relationship("Administrator", back_populates="user", uselist=False)
     ica_admin = relationship("ICAAdmin", back_populates="user", uselist=False)
     opManager = relationship("OpManager", back_populates="user", uselist=False)
