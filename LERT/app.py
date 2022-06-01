@@ -1,4 +1,4 @@
-from LERT.db import database, session
+from LERT.db import database
 from LERT.endpoints.ica.views import ica
 from LERT.endpoints.opmanager.views import opManager
 from LERT.endpoints.manager.views import manager
@@ -38,13 +38,10 @@ def create_app():
 
     if os.getenv('ENVIRONMENT') == 'dev':
         app.config.from_object('config.DevelopmentConfig')
-        print(os.getenv('ENVIRONMENT'))
     elif os.getenv('ENVIRONMENT') == 'prod':
-        app.config.from_object('config.DevelopmentConfig')
-        print(os.getenv('ENVIRONMENT'))
-        database
-        session
-
+        app.config.from_object('config.ProductionConfig')
+    database
+    
 app.register_blueprint(user)
 app.register_blueprint(admin)
 app.register_blueprint(icaAdmin)
