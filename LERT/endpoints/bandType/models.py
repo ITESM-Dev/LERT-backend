@@ -10,6 +10,7 @@ class BandType(Base):
     band = Column(String(50))
     country = Column(String(120))
     yearlyRate = Column(Float) 
-    dateToStart = Column(String(100))
+    dateToStart = Column(Date)
+    dateToFinish = Column(Date)
 
     hourType = relationship('HourType', back_populates="bandType", uselist=False)
