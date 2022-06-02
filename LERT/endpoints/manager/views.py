@@ -5,6 +5,7 @@ import flask
 import flask_login
 from sqlalchemy.orm import Session
 from LERT.db.database import connection
+from LERT.endpoints.ica.models import ICA
 from LERT.endpoints.manager.models import Manager
 from LERT.endpoints.opmanager.models import OpManager
 from LERT.endpoints.icaAdmin.models import ICAAdmin
@@ -94,12 +95,34 @@ def assignResourceToManager():
         association_manager_resource = association_table_Manager_Resource.insert().values(idSerial = resourceID, idManager = managerID)
         session.execute(association_manager_resource) 
         session.commit()
-        
-        return "OK", 200
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
+
+    return "OK", 200
+
+@manager.route("/getManagerICA", methods=['GET'])
+@cross_origin()
+@flask_login.login_required
+def getManagerICA():
+    try:
+        managerMail = flask_login.current_user.id
+        managerUserID = session.query(User).filter_by(mail = managerMail).first().idUser
+        managerIDICA = session.query(Manager).filter_by(idUser = managerUserID).first().idICA
+        managerICACode = session.query(ICA).filter_by(idICA = managerIDICA).first().icaCode
+        
+        resultICA = {
+            "idICA" : managerIDICA,
+            "icaCode": managerICACode
+        }
+     
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e)
+
+    return resultICA, 200
 
 session.close()

@@ -104,5 +104,4 @@ def updateManager():
 
     return statusCode  
     
-
 session.close()
