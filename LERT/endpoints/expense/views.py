@@ -100,7 +100,9 @@ def createExpense():
     except Exception as e:
         print(e)
 
-    return statusCode
+    id = {"id": expense1.idExpense }
+    
+    return id, 201 
 
 
 session.close()

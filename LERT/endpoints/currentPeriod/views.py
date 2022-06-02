@@ -35,6 +35,8 @@ def createCurrentPeriod():
         print(e)
 
 
-    return statusCode
+    id = {"id": currentPeriod1.idCurrentPeriod }
+    
+    return id, 201 
 
 session.close()

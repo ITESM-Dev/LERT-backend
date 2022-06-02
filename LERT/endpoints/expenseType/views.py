@@ -29,8 +29,10 @@ def createExpenseType():
         raise SystemExit(e)        
     except Exception as e:
         print(e)
-        
-    return statusCode
+
+    id = {"id": expenseType1.idExpenseType }
+    
+    return id, 201   
 
 
 session.close()
