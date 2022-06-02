@@ -118,4 +118,37 @@ def getHourTypes():
     except Exception as e:
         print(e)
 
+@opManager.route("/updateHourType", methods=['POST'])
+@cross_origin()
+@flask_login.login_required
+def updateHourType():
+    try:
+        hourTypeIdReq = int(flask.request.json['id'])
+        typeReq = flask.request.json['type']
+        bandReq = flask.request.json['band']
+        countryReq = flask.request.json['country']
+        rateReq = int(flask.request.json['rate'])
+        dateToStartReq = flask.request.json['dateToStart']
+        dateToFinishReq = flask.request.json['dateToFinish']
+
+        y, m, d = dateToStartReq.split('-')
+        startDateReq = datetime.datetime(int(y), int(m), int(d))
+
+        y, m, d = dateToFinishReq.split('-')
+        endDateReq = datetime.datetime(int(y), int(m), int(d))
+
+        session.query(HourType).\
+            filter_by(idHourType = hourTypeIdReq).\
+            update({HourType.type: typeReq, HourType.country:countryReq, HourType.band:bandReq,
+            HourType.rate:rateReq, HourType.dateToStart: startDateReq, HourType.dateToFinish: endDateReq})
+
+        session.commit()
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e) 
+
+    return "Hour Type Updated", 200
+
 session.close()
