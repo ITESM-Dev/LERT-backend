@@ -53,6 +53,8 @@ def createHourType():
     except Exception as e:
         print(e)
 
-    return statusCode
+    id = {"id": hourType1.idHourType }
+    
+    return id, 201 
 
 session.close()
