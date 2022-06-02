@@ -82,7 +82,7 @@ def deleteBandTypes():
     try:
         bandTypeIdReq = int(flask.request.json['id'])
         bandTypeDb = session.query(BandType).filter_by(idBandType = bandTypeIdReq).first()
-        bandTypeDb.delete()
+        session.delete(bandTypeDb)
         session.commit()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
@@ -150,5 +150,22 @@ def updateHourType():
         print(e) 
 
     return "Hour Type Updated", 200
+
+@opManager.route("/deleteHourType", methods=['POST'])
+@cross_origin()
+@flask_login.login_required
+def deleteHourType():
+    try:
+        hourTypeIdReq = int(flask.request.json['id'])
+        hourTypeDB = session.query(HourType).filter_by(idHourType = hourTypeIdReq).first()
+        session.delete(hourTypeDB)
+        session.commit()
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e) 
+
+    return "Hour Type Deleted", 200
 
 session.close()
