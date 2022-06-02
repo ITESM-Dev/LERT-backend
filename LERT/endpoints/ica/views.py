@@ -91,6 +91,8 @@ def createCurrentPeriod():
         print(e)
 
 
-    return statusCode
+    id = {"id": ica1.idICA}
+    
+    return id, 201 
 
 session.close()
