@@ -1,6 +1,6 @@
 from crypt import methods
 from sys import stderr
-from flask import Blueprint
+from flask import Blueprint, jsonify
 import flask
 import flask_login
 from sqlalchemy.orm import Session
@@ -125,4 +125,35 @@ def getManagerICA():
 
     return resultICA, 200
 
+@manager.route("/getAvailableResources", methods=['GET'])
+@cross_origin()
+@flask_login.login_required
+def getAvailableResources():
+    try:
+        managerMail = flask_login.current_user.id
+        managerUserID = session.query(User).filter_by(mail = managerMail).first().idUser
+        managerID = session.query(Manager).filter_by(idUser = managerUserID).first().idManager
+
+        resources = session.query(association_table_Manager_Resource).filter(association_table_Manager_Resource.c.idManager != managerID).all()
+        
+        resultResources = []
+
+        for current in resources:
+
+            currResourceIDUser = session.query(Resource).filter_by(idSerial = current.idSerial).first().idUser
+            currResourceMail = session.query(User).filter_by(idUser = currResourceIDUser).first().mail
+            
+            currentResource = {
+                "mail": currResourceMail
+            }
+
+            resultResources.append(currentResource)
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e)
+
+    return jsonify(resultResources), 200
+    
 session.close()
