@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from LERT.db.database import connection
 from LERT.endpoints.opmanager.models import OpManager
 from LERT.endpoints.bandType.models import BandType
+from LERT.endpoints.hourType.models import HourType
 from flask_cors import cross_origin
 import requests
 import flask_login
@@ -90,5 +91,31 @@ def deleteBandTypes():
         print(e) 
 
     return "Band Type Deleted", 200
+
+@opManager.route("/getHourTypes", methods=['GET'])
+@cross_origin()
+@flask_login.login_required
+def getHourTypes():
+    try:
+        hourTypesDB = session.query(HourType).all()
+        hourTypes = []
+        for hourType in hourTypesDB:
+            currentHourType = {
+                "id" : hourType.idHourType,
+                "type": hourType.type,
+                "country": hourType.country,
+                "band": hourType.band,
+                "rate": hourType.rate,
+                "dateToStart": str(hourType.dateToStart),
+                "dateToFinish": str(hourType.dateToFinish)
+            }
+            hourTypes.append(currentHourType)
+
+        return jsonify(hourTypes)
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e)
 
 session.close()
