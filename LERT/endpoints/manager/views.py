@@ -9,6 +9,8 @@ from LERT.endpoints.manager.models import Manager
 from LERT.endpoints.opmanager.models import OpManager
 from LERT.endpoints.icaAdmin.models import ICAAdmin
 from LERT.endpoints.user.models import User
+from LERT.endpoints.resource.models import Resource
+from LERT.endpoints.manager.models import association_table_Manager_Resource
 from LERT.endpoints.authorization.roles import opManager_permission, icaAdmin_permission
 from flask_cors import cross_origin
 import requests
@@ -71,5 +73,33 @@ def setIcaAdmin():
 
     return "Manager assigned to IcaAdmin", 200
 
-    
+@manager.route("/assignResourceToManager", methods=['POST'])
+@cross_origin()
+@flask_login.login_required
+def assignResourceToManager():
+    try:
+        managerMail = flask_login.current_user.id
+        resourceMailReq = flask.request.json['resourceMail']
+
+        resourceUserID = session.query(User).filter_by(mail = resourceMailReq).first().idUser
+        resourceID = session.query(Resource).filter_by(idUser = resourceUserID).first().idSerial
+
+        print(resourceID, file=stderr)
+
+        managerUserID = session.query(User).filter_by(mail = managerMail).first().idUser
+        managerID = session.query(Manager).filter_by(idUser = managerUserID).first().idManager
+        print(managerID, file=stderr)
+
+        
+        association_manager_resource = association_table_Manager_Resource.insert().values(idSerial = resourceID, idManager = managerID)
+        session.execute(association_manager_resource) 
+        session.commit()
+        
+        return "OK", 200
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e)
+
 session.close()
