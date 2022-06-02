@@ -103,5 +103,6 @@ def updateManager():
         print(e)
 
     return statusCode  
+    
 
 session.close()
