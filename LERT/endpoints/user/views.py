@@ -1,6 +1,7 @@
 from crypt import methods
 from flask import Blueprint
 from flask_login import login_required
+from datetime import date
 from LERT.endpoints.authorization.roles import admin_permission
 #from LERT.db.session import session
 from LERT.db.database import connection
@@ -57,7 +58,7 @@ def createUser():
         session.add(opManager)
         session.commit()
     elif (userRole == "Manager"):    
-        manager = Manager(idUser = userDB.idUser, recoveryStatus = "Not completed")
+        manager = Manager(idUser = userDB.idUser, recoveryStatus = "Not completed", status = "Active", lastUpdated = date.today())
         session.add(manager)
         session.commit()
     else:
