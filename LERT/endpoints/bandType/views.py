@@ -1,4 +1,5 @@
 from crypt import methods
+from sys import stderr
 from flask import Blueprint
 import flask_login
 from flask_cors import cross_origin
@@ -18,7 +19,6 @@ session = Session(connection.e)
 @flask_login.login_required
 def createBandType():
 
-    statusCode = flask.Response(status=201)
     typeReq = flask.request.json['type']
     bandReq = flask.request.json['band'] 
     yearlyRateReq = int(flask.request.json['yearlyRate'])
@@ -38,12 +38,15 @@ def createBandType():
         bandType1 = BandType(type = typeReq, band = bandReq, yearlyRate = yearlyRateReq, country = countryReq, dateToStart = startDateReq, dateToFinish = endDateReq)
         session.add(bandType1)
         session.commit() 
+        
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)    
     except Exception as e:
         print(e)
 
-    return statusCode
+    id = {"id": bandType1.idBandType }
+    
+    return id, 201
 
 session.close()
 
