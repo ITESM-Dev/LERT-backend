@@ -13,8 +13,13 @@ from LERT.endpoints.manager.models import Manager
 from LERT.endpoints.icaAdmin.models import ICAAdmin
 import flask
 from argon2 import PasswordHasher
+from flask_cors import cross_origin
+import requests
+import flask_login
 
 user = Blueprint('user', __name__)
+
+session = Session(connection.e)
 
 @user.route("/signUp", methods=['POST', 'GET'])
 def createUser():
@@ -29,7 +34,6 @@ def createUser():
     userCountry = flask.request.json['country']
     
     try:
-        session = Session(connection.e)
 
         user1 = User(name = userName, mail = userMail, password = userPassword, band = userBand, role = userRole, country = userCountry)
         session.add(user1)
@@ -60,7 +64,31 @@ def createUser():
         resource = Resource(idUser = userDB.idUser)
         session.add(resource)
         session.commit()
-    session.close()
-
 
     return statusCode
+
+@user.route("/getUserInfo", methods=['GET'])
+@cross_origin()
+@flask_login.login_required
+def getUserInfo():
+    try:
+        userMail = flask.request.json['mail']
+        userDB = session.query(User).filter_by(mail = userMail).first()
+
+        result = {
+            "id": userDB.idUser,
+            "name": userDB.name,
+            "mail": userDB.mail,
+            "band": userDB.band,
+            "role": userDB.role,
+            "country": userDB.country
+        }
+
+        return result
+        
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e)
+
+session.close()
