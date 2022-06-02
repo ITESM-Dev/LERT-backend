@@ -8,6 +8,8 @@ from LERT.db.database import connection
 from LERT.endpoints.hourType.models import HourType
 from LERT.endpoints.bandType.models import BandType
 import requests
+import datetime
+
 hourType = Blueprint('hourType', __name__)
 
 session = Session(connection.e)
@@ -38,12 +40,16 @@ def createHourType():
 
     try:
 
-        print(bandTypeIDdb, typeReq, bandReqName, rateReq, countryReq, dateToStartReq, dateToFinishReq, file=stderr)
+        y, m, d = dateToStartReq.split('-')
+        startDateReq = datetime.datetime(int(y), int(m), int(d))
+
+        y, m, d = dateToFinishReq.split('-')
+        endDateReq = datetime.datetime(int(y), int(m), int(d))
 
         hourType1 = HourType(idBandType = bandTypeIDdb, 
             type = typeReq, band = bandReqName, rate = rateReq, 
-            country = countryReq, dateToStart = dateToStartReq, 
-            dateToFinish = dateToFinishReq)
+            country = countryReq, dateToStart = startDateReq, 
+            dateToFinish = endDateReq)
         # TODO calculate hourType rate based on bandType yearly rate, country and # of extra hours worked
         session.add(hourType1)
         session.commit() 
