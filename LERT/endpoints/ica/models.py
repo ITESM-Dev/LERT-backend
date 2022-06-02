@@ -1,5 +1,6 @@
 from LERT.db.database import Base
 from sqlalchemy import *
+from sqlalchemy.orm import relationship
 
 class ICA(Base):
     __tablename__ = "ICA"
@@ -31,4 +32,5 @@ class ICA(Base):
     ctyNamePerf = Column(String(100))
     rCtyPerf = Column(String(50))
     totalBilling = Column(Float)
+    manager = relationship("Manager", back_populates="ica")
 

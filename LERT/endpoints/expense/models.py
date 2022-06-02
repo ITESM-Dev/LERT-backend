@@ -3,13 +3,13 @@ from sqlalchemy import *
 from sqlalchemy.orm import relationship
 
 association_table_Expense_Resource = Table(
-    'association', Base.metadata,
+    'expense_resource', Base.metadata,
     Column('idExpense', Integer, ForeignKey('Expense.idExpense')),
     Column('idResource', Integer, ForeignKey('Resource.idSerial'))
 )
 
 association_table_Expense_ICA = Table(
-    'association2', Base.metadata,
+    'expense_ICA', Base.metadata,
     Column('idExpense', Integer, ForeignKey('Expense.idExpense')),
     Column('idICA', Integer, ForeignKey('ICA.idICA'))
 )
