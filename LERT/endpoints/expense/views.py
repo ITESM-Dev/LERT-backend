@@ -7,7 +7,7 @@ import flask
 from sqlalchemy.orm import Session
 from LERT.db.database import connection
 from LERT.endpoints.expense.models import Expense
-from LERT.endpoints.expense.models import association_table_Expense_Resource, association_table_Expense_ICA
+from LERT.endpoints.expense.models import association_table_Expense_Resource
 from LERT.endpoints.resource.models import Resource
 from LERT.endpoints.expenseType.models import ExpenseType
 from LERT.endpoints.ica.models import ICA
@@ -16,7 +16,7 @@ from LERT.endpoints.manager.models import Manager
 from LERT.endpoints.user.models import User
 from LERT.endpoints.hourType.models import HourType
 from LERT.endpoints.resourceExpense.models import ResourceExpense
-
+import datetime
 import requests
 
 expense = Blueprint('expense', __name__)
@@ -31,18 +31,17 @@ def createExpense():
     # TODO CurrentPeriod PK = quarter + year 
     # TODO tipo de dato de date -> Date !String
             
-    statusCode = flask.Response(status=201)
-    icaCodeReq = flask.request.json['icaCode']
-    mailReq = flask.request.json['mail']
-    costReq = int(flask.request.json['cost'])
-    dateReq = flask.request.json['date']
-    # y, m, d = startDateReq.split('-')
-    # startDateReq = datetime.datetime(int(y), int(m), int(d))
-    commentReq = flask.request.json['comment']
-    nameExpenseReq = flask.request.json['nameExpense']
-    keyCurrentPeriodReq = int(flask.request.json['keyCurrentPeriod'])
-
     try:
+        mailReq = flask.request.json['mail']
+        costReq = int(flask.request.json['cost'])
+        dateReq = flask.request.json['date']
+        commentReq = flask.request.json['comment']
+        nameExpenseReq = flask.request.json['nameExpense']
+        keyCurrentPeriodReq = int(flask.request.json['keyCurrentPeriod'])
+
+        y, m, d = dateReq.split('-')
+        dateFormat = datetime.datetime(int(y), int(m), int(d))
+
         managerMail = flask_login.current_user.id
         managerUserQuery = session.query(User).filter_by(mail = managerMail)
         managerUserID = managerUserQuery.first().idUser 
@@ -63,7 +62,7 @@ def createExpense():
     try:
         
         expense1 = Expense(idManager = managerID, idExpenseType = expenseTypeID, 
-        idCurrentPeriod =  currentPeriodID ,cost = costReq, date = dateReq, comment = commentReq)
+        idCurrentPeriod =  currentPeriodID ,cost = costReq, date = dateFormat, comment = commentReq)
         session.add(expense1)
         session.commit() 
 
@@ -84,16 +83,7 @@ def createExpense():
 
         association_expense_resource = association_table_Expense_Resource.insert().values(idExpense = expense1.idExpense, idResource = resourceID)
         session.execute(association_expense_resource) 
-        session.commit()
-
-        icaQuery = session.query(ICA).filter_by(icaCode = icaCodeReq).first()
-        icaID = icaQuery.idICA
-      
-        
-        association_expense_ica = association_table_Expense_ICA.insert().values(idExpense = expense1.idExpense, idICA = icaID)
-        session.execute(association_expense_ica) 
-        session.commit()
-        
+        session.commit()        
         
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
