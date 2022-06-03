@@ -6,6 +6,7 @@ import flask_login
 import requests
 from sqlalchemy.orm import Session
 from LERT.db.database import connection
+from LERT.endpoints.ica.models import ICA
 from LERT.endpoints.manager.models import Manager
 from LERT.endpoints.opmanager.models import OpManager
 from LERT.endpoints.user.models import User
@@ -293,5 +294,50 @@ def deleteCurrentPeriod():
         print(e) 
 
     return "Current Period Deleted", 200
+
+@opManager.route("/getIcas", methods=['GET'])
+@cross_origin()
+@flask_login.login_required
+def getIcas():
+    try:
+        icasDB = session.query(ICA).all()
+        icas = []
+        for ica in icasDB:
+            currentIca = {
+                "icaCode": ica.icaCode,
+                "icaCore": ica.icaCore,
+                "year": ica.year,
+                "totalBilling": ica.totalBilling,
+                "rCtyPerf": ica.rCtyPerf,
+                "ctyNamePerf": ica.ctyNamePerf,
+                "endDate": ica.endDate,
+                "startDate": ica.startDate,
+                "totalPlusTaxes": ica.totalPlusTaxes,
+                "nec": ica.nec,
+                "type": ica.type,
+                "description": ica.description,
+                "leru": ica.leru,
+                "minor": ica.minor,
+                "major": ica.major,
+                "division":  ica.division,
+                "rCtyReq": ica.rCtyReq,
+                "ctyNameReq": ica.ctyNameReq,
+                "cc": ica.cc,
+                "frequencyBill": ica.frequencyBill,
+                "depto": ica.depto,
+                "status": ica.status,
+                "country": ica.country,
+                "budget": ica.budget,
+                "icaOwner": ica.icaOwner,
+                "idPlanning": ica.idPlanning
+            }
+            icas.append(currentIca)
+
+        return jsonify(icas)
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e)
 
 session.close()
