@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from LERT.db.database import connection
 from LERT.endpoints.manager.models import Manager
 from LERT.endpoints.opmanager.models import OpManager
+from LERT.endpoints.user.models import User
 from LERT.endpoints.currentPeriod.models import CurrentPeriod
 from LERT.endpoints.bandType.models import BandType
 from LERT.endpoints.hourType.models import HourType
@@ -110,6 +111,10 @@ def getHourTypes():
                 "dateToFinish": str(hourType.dateToFinish)
             }
             hourTypes.append(currentHourType)
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e)
 
         return jsonify(hourTypes)
 
