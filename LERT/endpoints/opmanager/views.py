@@ -3,6 +3,7 @@ from sys import stderr
 from flask import Blueprint, jsonify
 from sqlalchemy.orm import Session
 from LERT.db.database import connection
+from LERT.endpoints.currentPeriod.models import CurrentPeriod
 from LERT.endpoints.opmanager.models import OpManager
 from LERT.endpoints.bandType.models import BandType
 from LERT.endpoints.hourType.models import HourType
@@ -167,5 +168,70 @@ def deleteHourType():
         print(e) 
 
     return "Hour Type Deleted", 200
+
+@opManager.route("/getCurrentPeriods", methods=['GET'])
+@cross_origin()
+@flask_login.login_required
+def getCurrentPeriods():
+    try:
+        currentPeriodsDB = session.query(CurrentPeriod).all()
+        currentPeriods = []
+        for currentPeriodDB in currentPeriodsDB:
+            currentPeriod = {
+                "id" : currentPeriodDB.idCurrentPeriod,
+                "year": currentPeriodDB.year,
+                "key": currentPeriodDB.key,
+                "status": currentPeriodDB.status
+            }
+            currentPeriods.append(currentPeriod)
+
+        return jsonify(currentPeriods)
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e)
+
+@opManager.route("/updateCurrentPeriod", methods=['POST'])
+@cross_origin()
+@flask_login.login_required
+def updateCurrentPeriod():
+    try:
+        currentPeriodIdReq = int(flask.request.json['id'])
+        quarterReq = int(flask.request.json['quarter'])
+        yearReq = int(flask.request.json['year'])
+        keyReq = int(flask.request.json['key'])
+        statusReq = flask.request.json['status']
+
+        session.query(CurrentPeriod).\
+            filter_by(idCurrentPeriod = currentPeriodIdReq).\
+            update({CurrentPeriod.quarter: quarterReq, CurrentPeriod.year: yearReq,
+            CurrentPeriod.key:keyReq, CurrentPeriod.status: statusReq})
+
+        session.commit()
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e) 
+
+    return "Current Period Updated", 200
+
+@opManager.route("/deleteCurrentPeriod", methods=['POST'])
+@cross_origin()
+@flask_login.login_required
+def deleteCurrentPeriod():
+    try:
+        currentPeriodIdReq = int(flask.request.json['id'])
+        currentPeriodDB = session.query(CurrentPeriod).filter_by(idCurrentPeriod = currentPeriodIdReq).first()
+        session.delete(currentPeriodDB)
+        session.commit()
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e) 
+
+    return "Current Period Deleted", 200
 
 session.close()
