@@ -11,8 +11,8 @@ class HourType(Base):
     band = Column(String(50))
     country = Column(String(120))
     rate = Column(Float)
-    dateToStart = Column(String(100))
-    dateToFinish = Column(String(100))
+    dateToStart = Column(Date)
+    dateToFinish = Column(Date)
 
     resourceExpense = relationship("ResourceExpense", back_populates="hourType", uselist=False)
     bandType = relationship("BandType", back_populates="hourType")

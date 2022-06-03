@@ -73,7 +73,7 @@ def createUser():
 @flask_login.login_required
 def getUserInfo():
     try:
-        userMail = flask.request.json['mail']
+        userMail = flask.request.headers['mail']
         userDB = session.query(User).filter_by(mail = userMail).first()
 
         result = {

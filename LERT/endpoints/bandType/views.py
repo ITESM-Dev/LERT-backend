@@ -27,7 +27,6 @@ def createBandType():
     dateToFinishReq = flask.request.json['dateToFinish']
 
     try:
-        session = Session(connection.e)
 
         y, m, d = dateToStartReq.split('-')
         startDateReq = datetime.datetime(int(y), int(m), int(d))
