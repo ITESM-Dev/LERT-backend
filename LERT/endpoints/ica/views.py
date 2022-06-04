@@ -18,7 +18,6 @@ session = Session(connection.e)
 @flask_login.login_required
 def createCurrentPeriod():
     
-    statusCode = flask.Response(status=201)
     icaCodeReq = flask.request.json['icaCode']
     icaCoreReq = flask.request.json['icaCore']
     yearReq = flask.request.json['year']

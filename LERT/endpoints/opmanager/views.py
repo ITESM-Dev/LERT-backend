@@ -1,4 +1,5 @@
 from sys import stderr
+from turtle import TPen
 from flask import Blueprint, jsonify
 import flask
 from flask_cors import cross_origin
@@ -6,6 +7,7 @@ import flask_login
 import requests
 from sqlalchemy.orm import Session
 from LERT.db.database import connection
+from LERT.endpoints.ica.models import ICA
 from LERT.endpoints.manager.models import Manager
 from LERT.endpoints.opmanager.models import OpManager
 from LERT.endpoints.user.models import User
@@ -293,5 +295,126 @@ def deleteCurrentPeriod():
         print(e) 
 
     return "Current Period Deleted", 200
+
+@opManager.route("/getIcas", methods=['GET'])
+@cross_origin()
+@flask_login.login_required
+def getIcas():
+    try:
+        icasDB = session.query(ICA).all()
+        icas = []
+        for ica in icasDB:
+            currentIca = {
+                "icaCode": ica.icaCode,
+                "icaCore": ica.icaCore,
+                "year": ica.year,
+                "totalBilling": ica.totalBilling,
+                "rCtyPerf": ica.rCtyPerf,
+                "ctyNamePerf": ica.ctyNamePerf,
+                "endDate": ica.endDate,
+                "startDate": ica.startDate,
+                "totalPlusTaxes": ica.totalPlusTaxes,
+                "nec": ica.nec,
+                "type": ica.type,
+                "description": ica.description,
+                "leru": ica.leru,
+                "minor": ica.minor,
+                "major": ica.major,
+                "division":  ica.division,
+                "rCtyReq": ica.rCtyReq,
+                "ctyNameReq": ica.ctyNameReq,
+                "cc": ica.cc,
+                "frequencyBill": ica.frequencyBill,
+                "depto": ica.depto,
+                "status": ica.status,
+                "country": ica.country,
+                "budget": ica.budget,
+                "icaOwner": ica.icaOwner,
+                "idPlanning": ica.idPlanning
+            }
+            icas.append(currentIca)
+
+        return jsonify(icas)
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e)
+
+@opManager.route("/updateIca", methods=['POST'])
+@cross_origin()
+@flask_login.login_required
+def updateIca():
+    try:
+        idIcaReq = flask.request.json['id']
+        icaCodeReq = flask.request.json['icaCode']
+        icaCoreReq = flask.request.json['icaCore']
+        yearReq = flask.request.json['year']
+        idPlanningReq = flask.request.json['idPlanning']
+        icaOwnerReq = flask.request.json['icaOwner']
+        budgetReq = int(flask.request.json['budget'])
+        countryReq = flask.request.json['country']
+        statusReq = flask.request.json['status']
+        deptoReq = flask.request.json['depto']
+        frequencyBillReq = flask.request.json['frequencyBill']
+        ccReq = flask.request.json['cc']
+        ctyNameReq1 = flask.request.json['ctyNameReq']
+        rCtyReq1 = flask.request.json['rCtyReq']
+        divisionReq = flask.request.json['division']
+        majorReq = flask.request.json['major']
+        minorReq = flask.request.json['minor']
+        leruReq = flask.request.json['leru']
+        descriptionReq = flask.request.json['description']
+        typeReq  = flask.request.json['type']
+        necReq = int(flask.request.json['nec'])
+        totalPlusTaxesReq  = int(flask.request.json['totalPlusTaxes'])
+        startDateReq = flask.request.json['startDate']
+        endDateReq = flask.request.json['endDate']
+        ctyNamePerfReq = flask.request.json['ctyNamePerf']
+        rCtyPerfReq = flask.request.json['rCtyPerf']
+        totalBillingReq = int(flask.request.json['totalBilling'])
+
+        y, m, d = startDateReq.split('-')
+        startDate = datetime.datetime(int(y), int(m), int(d))
+
+        y, m, d = endDateReq.split('-')
+        endDate = datetime.datetime(int(y), int(m), int(d))
+
+        session.query(ICA).\
+            filter_by(idICA = idIcaReq).\
+            update({ICA.icaCode: icaCodeReq, ICA.icaCore: icaCoreReq, ICA.year: yearReq, ICA.idPlanning: idPlanningReq,
+            ICA.icaOwner: icaOwnerReq, ICA.budget: budgetReq, ICA.country: countryReq, ICA.status:statusReq,
+            ICA.depto: deptoReq, ICA.frequencyBill: frequencyBillReq, ICA.cc: ccReq, ICA.ctyNameReq: ctyNameReq1,
+            ICA.rCtyReq: rCtyReq1, ICA.division: divisionReq, ICA.major: majorReq, ICA.minor: minorReq, 
+            ICA.leru: leruReq, ICA.description: descriptionReq, ICA.type: typeReq, ICA.nec: necReq, 
+            ICA.totalPlusTaxes: totalPlusTaxesReq, ICA.startDate: startDate, ICA.endDate: endDate, ICA.ctyNamePerf: ctyNamePerfReq,
+            ICA.rCtyPerf: rCtyPerfReq, ICA.totalBilling: totalBillingReq})
+
+        session.commit()
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e) 
+
+    return "ICA Updated", 200
+
+@opManager.route("/deleteIca", methods=['POST'])
+@cross_origin()
+@flask_login.login_required
+def deleteIca():
+    try:
+        icaIdReq = int(flask.request.json['id'])
+        icaDB = session.query(ICA).filter_by(idICA = icaIdReq).first()
+        session.delete(icaDB)
+        session.commit()
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e) 
+
+    return "ICA Deleted", 200
+
 
 session.close()
