@@ -2,6 +2,7 @@ from LERT.db.database import Base
 from sqlalchemy import *
 from sqlalchemy.orm import relationship
 
+# TODO CHANGE KEY TO UNIQUE
 class CurrentPeriod(Base):
     __tablename__='CurrentPeriod'
 
