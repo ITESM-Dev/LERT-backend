@@ -1,7 +1,6 @@
 from crypt import methods
 import datetime
 from sys import stderr
-from unittest import result
 from flask import Blueprint, jsonify
 import flask
 import flask_login
@@ -103,13 +102,132 @@ def assignResourceToManager():
         association_manager_resource = association_table_Manager_Resource.insert().values(idSerial = resourceID, idManager = managerID)
         session.execute(association_manager_resource) 
         session.commit()
-        
-        return "OK", 200
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
+
+    return "OK", 200
+
+@manager.route("/getManagerICA", methods=['GET'])
+@cross_origin()
+@flask_login.login_required
+def getManagerICA():
+    try:
+        managerMail = flask_login.current_user.id
+        managerUserID = session.query(User).filter_by(mail = managerMail).first().idUser
+        managerIDICA = session.query(Manager).filter_by(idUser = managerUserID).first().idICA
+        managerICACode = session.query(ICA).filter_by(idICA = managerIDICA).first().icaCode
+        
+        resultICA = {
+            "idICA" : managerIDICA,
+            "icaCode": managerICACode
+        }
+     
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e)
+
+    return resultICA, 200
+
+@manager.route("/getAvailableResources", methods=['GET'])
+@cross_origin()
+@flask_login.login_required
+def getAvailableResources():
+    try:
+        managerMail = flask_login.current_user.id
+        managerUserID = session.query(User).filter_by(mail = managerMail).first().idUser
+        managerID = session.query(Manager).filter_by(idUser = managerUserID).first().idManager
+
+        resources = session.query(association_table_Manager_Resource).filter(association_table_Manager_Resource.c.idManager != managerID).all()
+        
+        resultResources = []
+
+        for current in resources:
+
+            currResourceIDUser = session.query(Resource).filter_by(idSerial = current.idSerial).first().idUser
+            currResourceMail = session.query(User).filter_by(idUser = currResourceIDUser).first().mail
+            
+            currentResource = {
+                "mail": currResourceMail
+            }
+
+            resultResources.append(currentResource)
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e)
+
+    return jsonify(resultResources), 200
+    
+@manager.route("/getResources", methods=['GET'])
+@cross_origin()
+@flask_login.login_required
+def getResources():
+    try:
+        managerMail = flask_login.current_user.id
+        managerUserID = session.query(User).filter_by(mail = managerMail).first().idUser
+        managerID = session.query(Manager).filter_by(idUser = managerUserID).first().idManager
+
+        resources = session.query(association_table_Manager_Resource).filter(association_table_Manager_Resource.c.idManager == managerID).all()
+        
+        resultResources = []
+
+        for current in resources:
+
+            currResource = session.query(Resource).filter_by(idSerial = current.idSerial).first()
+            currResourceUserInfo = session.query(User).filter_by(idUser = currResource.idUser).first()
+
+            currentResource = {
+                "id": currResource.idUser,
+                "name": currResourceUserInfo.name,
+                "mail": currResourceUserInfo.mail,
+                "role": currResourceUserInfo.role,
+                "country":currResourceUserInfo.country
+            }
+
+            resultResources.append(currentResource)
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e)
+
+    return jsonify(resultResources), 200
+
+
+@manager.route("/updateResources", methods=['POST'])
+@cross_origin()
+@flask_login.login_required
+def updateResources():
+    try:
+        idResourceReq = flask.request.json['id']
+        resourceNameReq = flask.request.json['name']
+        resourceBandReq = int(flask.request.json['band'])
+        resourceRoleReq = flask.request.json['role']
+        resourceCountryReq = flask.request.json['country']
+
+        session.query(User).filter_by(
+            idUser = idResourceReq
+            ).update(
+                {
+                    User.name: resourceNameReq, 
+                    User.band: resourceBandReq, 
+                    User.role: resourceRoleReq,
+                    User.country: resourceCountryReq
+                }
+            )
+
+        session.commit()
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e)
+    return "Resource updated", 200
 
 @manager.route("/getExpenses", methods=['GET'])
 @cross_origin()
