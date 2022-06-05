@@ -241,6 +241,7 @@ def getCurrentPeriods():
         for currentPeriodDB in currentPeriodsDB:
             currentPeriod = {
                 "id" : currentPeriodDB.idCurrentPeriod,
+                "quarter": currentPeriodDB.quarter,
                 "year": currentPeriodDB.year,
                 "key": currentPeriodDB.key,
                 "status": currentPeriodDB.status
