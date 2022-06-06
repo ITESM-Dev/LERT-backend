@@ -7,6 +7,7 @@ import flask_login
 import requests
 from sqlalchemy.orm import Session
 from LERT.db.database import connection
+from LERT.endpoints.expense.models import Expense
 from LERT.endpoints.ica.models import ICA
 from LERT.endpoints.manager.models import Manager
 from LERT.endpoints.opmanager.models import OpManager
@@ -19,6 +20,30 @@ import datetime
 opManager = Blueprint('opManager', __name__)
 
 session = Session(connection.e)
+
+@opManager.route("/assignIcaToManager", methods=['POST'])
+@cross_origin()
+@flask_login.login_required
+def assignIcaToManager():
+    try:
+        managerMail = flask.request.json['managerMail']
+        icaCodeReq = flask.request.json['icaCode']
+
+        icaDB = session.query(ICA).filter_by(icaCode = icaCodeReq).first().idICA
+        managerID = session.query(User).filter_by(mail = managerMail).first().idUser
+        
+        session.query(Manager).\
+            filter_by(idUser = managerID).\
+            update({Manager.idICA: icaDB})
+
+        session.commit()
+        
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e)
+
+    return "ICA assigned to manager", 200
 
 @opManager.route("/getBandTypes", methods=['GET'])
 @cross_origin()
@@ -302,19 +327,21 @@ def deleteCurrentPeriod():
 @flask_login.login_required
 def getIcas():
     try:
+        
         icasDB = session.query(ICA).all()
         icas = []
         for ica in icasDB:
+
             currentIca = {
                 "icaCode": ica.icaCode,
                 "icaCore": ica.icaCore,
                 "year": ica.year,
-                "totalBilling": ica.totalBilling,
+                "totalBilling": 0,
                 "rCtyPerf": ica.rCtyPerf,
                 "ctyNamePerf": ica.ctyNamePerf,
-                "endDate": ica.endDate,
-                "startDate": ica.startDate,
-                "totalPlusTaxes": ica.totalPlusTaxes,
+                "endDate": str(ica.endDate),
+                "startDate": str(ica.startDate),
+                "totalPlusTaxes": 0,
                 "nec": ica.nec,
                 "type": ica.type,
                 "description": ica.description,
@@ -333,6 +360,25 @@ def getIcas():
                 "icaOwner": ica.icaOwner,
                 "idPlanning": ica.idPlanning
             }
+
+
+            totalBilling = 0
+
+            managers = session.query(Manager).filter_by(idICA = ica.idICA).all()
+
+            if managers != None:
+                for manager in managers:
+                    expenses = session.query(Expense).filter_by(idManager = manager.idManager).all()
+                    if expenses != None:
+                        for expense in expenses:
+                            totalBilling += expense.cost
+                ica.totalBilling = totalBilling
+                ica.totalPlusTaxes = totalBilling * 1.16
+                session.commit()
+
+                currentIca['totalBilling'] = totalBilling
+                currentIca['totalPlusTaxes'] = totalBilling * 1.16
+
             icas.append(currentIca)
 
         return jsonify(icas)
