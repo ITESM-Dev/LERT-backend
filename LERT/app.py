@@ -62,19 +62,21 @@ login_manager.init_app(app)
 
 VIDA_TOKEN = 1000 * 60 * 3
 
-session2 = Session(connection.e)
+
 
 @login_manager.user_loader
 def load_user(idUser):  
+    session2 = Session(connection.e)
     user = session2.query(User).get(idUser)
 
     if user == None:
         return "User not found", 401
-
+    session2.close()
     return user
 
 @login_manager.request_loader
 def request_loader(request):
+    session2 = Session(connection.e)
     ph = PasswordHasher()
 
     try:
@@ -114,7 +116,7 @@ def request_loader(request):
     result.role = userRole
 
     identity_changed.send(current_app._get_current_object(), identity=Identity(userDB.idUser))
-
+    session2.close()
     return result
 
 principals = Principal(app)
@@ -127,6 +129,7 @@ manager_or_IcaAdmin = Permission(RoleNeed('Manager'), RoleNeed('IcaAdmin'))
 
 @identity_loaded.connect_via(app)
 def on_identity_loaded(sender, identity):
+    session2 = Session(connection.e)
 
     try:
         userDBQuery = session2.query(User).filter_by(idUser = identity.id).first()
@@ -139,16 +142,20 @@ def on_identity_loaded(sender, identity):
         # identity with the roles that the user provides
         
         identity.provides.add(RoleNeed(userDBQuery.role))
+        session2.close()
     except Exception as e:
         return e
+
 
 @app.route('/login', methods=['POST'])
 @cross_origin()
 def login():
+
+    session3 = Session(connection.e)
     
     try:
         userMail = flask.request.json['mail']
-        userDBQuery = session2.query(User).filter_by(mail = userMail)
+        userDBQuery = session3.query(User).filter_by(mail = userMail)
         userDB = userDBQuery.first()
         userMail = userDB.mail
     except Exception as e:
@@ -166,13 +173,15 @@ def login():
     token = secrets.token_urlsafe(32)
     expiration = time.time()
 
+
+
     userDBQuery.\
         update({User.token: ph.hash(token)}, synchronize_session='fetch')
     
     userDBQuery.\
         update({User.expiration: expiration}, synchronize_session='fetch')
 
-    session2.commit()  
+    session3.commit()  
 
     print(userDB.mail, file=sys.stderr)
 
@@ -185,7 +194,7 @@ def login():
         "country": userDB.country,
         "token": token
     }
-
+    session3.close()
     return result, 200
 
 @app.route('/protegido')
@@ -193,7 +202,8 @@ def login():
 @login_required
 @admin_permission.require(http_exception=403)
 def protegido():
-
+    session2 = Session(connection.e)
+    session2.close()
     return(flask_login.current_user.role)
 
 @app.errorhandler(403)
@@ -209,12 +219,14 @@ def handler():
 @cross_origin() 
 @login_required
 def logout():
+    session2 = Session(connection.e)
     userDBQuery = session2.query(User).filter_by(mail = flask_login.current_user.id)
     userDBQuery.\
         update({User.expiration: 0}, synchronize_session='fetch')
+    session2.close()
     return "Logged Out", 200
 
-session2.close()
+#session2.close()
 
 if __name__ == "__main__":
     create_app().run()
