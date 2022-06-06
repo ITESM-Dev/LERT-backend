@@ -21,30 +21,6 @@ opManager = Blueprint('opManager', __name__)
 
 session = Session(connection.e)
 
-@opManager.route("/assignIcaToManager", methods=['POST'])
-@cross_origin()
-@flask_login.login_required
-def assignIcaToManager():
-    try:
-        managerMail = flask.request.json['managerMail']
-        icaCodeReq = flask.request.json['icaCode']
-
-        icaDB = session.query(ICA).filter_by(icaCode = icaCodeReq).first().idICA
-        managerID = session.query(User).filter_by(mail = managerMail).first().idUser
-        
-        session.query(Manager).\
-            filter_by(idUser = managerID).\
-            update({Manager.idICA: icaDB})
-
-        session.commit()
-        
-    except requests.exceptions.RequestException as e:  # This is the correct syntax
-        raise SystemExit(e)        
-    except Exception as e:
-        print(e)
-
-    return "ICA assigned to manager", 200
-
 @opManager.route("/getBandTypes", methods=['GET'])
 @cross_origin()
 @flask_login.login_required
@@ -427,6 +403,8 @@ def updateIca():
         y, m, d = endDateReq.split('-')
         endDate = datetime.datetime(int(y), int(m), int(d))
 
+        previousOwner = session.query(ICA).filter_by(idICA = idIcaReq).first().icaOwner
+
         session.query(ICA).\
             filter_by(idICA = idIcaReq).\
             update({ICA.icaCode: icaCodeReq, ICA.icaCore: icaCoreReq, ICA.year: yearReq, ICA.idPlanning: idPlanningReq,
@@ -436,6 +414,18 @@ def updateIca():
             ICA.leru: leruReq, ICA.description: descriptionReq, ICA.type: typeReq, ICA.nec: necReq, 
             ICA.totalPlusTaxes: totalPlusTaxesReq, ICA.startDate: startDate, ICA.endDate: endDate, ICA.ctyNamePerf: ctyNamePerfReq,
             ICA.rCtyPerf: rCtyPerfReq, ICA.totalBilling: totalBillingReq})
+
+        
+        managerID = session.query(User).filter_by(mail = icaOwnerReq).first().idUser
+        previousManagerID = session.query(User).filter_by(mail = previousOwner).first().idUser
+        
+        session.query(Manager).\
+            filter_by(idUser = managerID).\
+            update({Manager.idICA: idIcaReq})
+
+        session.query(Manager).\
+            filter_by(idUser = previousManagerID).\
+            update({Manager.idICA: None})
 
         session.commit()
 
