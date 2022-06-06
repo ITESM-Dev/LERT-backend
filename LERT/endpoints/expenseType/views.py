@@ -96,6 +96,6 @@ def deleteExpenseType():
     except Exception as e:
         print(e)
 
-    return "Expense Type deleted" ,200
+    return "Expense Type Deleted" ,200
 
 session.close()
