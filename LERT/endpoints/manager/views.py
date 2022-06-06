@@ -60,19 +60,16 @@ def setOpManager():
 @flask_login.login_required
 def setIcaAdmin():
     try:
-        managerMail = flask.request.json['managerMail']
-        icaAdminMail = flask_login.current_user.id
+        icaAdminMail = flask.request.json['icaAdminMail']
+        managerMail = flask_login.current_user.id
 
-        managerQuery = session.query(User).filter_by(mail = managerMail)
-        icaAdminUserQuery = session.query(User).filter_by(mail = icaAdminMail)
-        icaAdminUserID = icaAdminUserQuery.first().idUser
-        icaAdminQuery = session.query(ICAAdmin).filter_by(idUser = icaAdminUserID)
-        icaAdminID = icaAdminQuery.first().idICA_Admin
-        managerID = managerQuery.first().idUser
+        managerId = session.query(User).filter_by(mail = managerMail).first().idUser
+        icaAdminUser = session.query(User).filter_by(mail = icaAdminMail).first().idUser
+        icaAdminId = session.query(ICAAdmin).filter_by(idUser = icaAdminUser).first().idICA_Admin
         
         session.query(Manager).\
-            filter_by(idUser = managerID).\
-            update({Manager.idICA_Admin: icaAdminID})
+            filter_by(idUser = managerId).\
+            update({Manager.idICA_Admin: icaAdminId})
         session.commit()
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        

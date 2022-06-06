@@ -1,20 +1,48 @@
-from flask import Blueprint
+from flask import Blueprint, jsonify
+import flask
+from flask_cors import cross_origin
+import flask_login
+import requests
 from sqlalchemy.orm import Session
 from LERT.db.database import connection
 from LERT.endpoints.icaAdmin.models import ICAAdmin
+from sqlalchemy.orm import Session
+from LERT.endpoints.manager.models import Manager
+from LERT.endpoints.user.models import User
+
+from LERT.endpoints.user.models import User
 
 icaAdmin = Blueprint('icaAdmin', __name__)
 
-try:
-    session = Session(connection.e)
+session = Session(connection.e)
 
-    #icaAdmin1 = ICAAdmin(idUser=1)
-    #session.add(icaAdmin1)
-    #session.commit() 
-    session.close()
-except Exception as e:
-    print(e)
+@icaAdmin.route("/getManagersIcaAdmin", methods=['GET'])
+@cross_origin()
+@flask_login.login_required
+def getManagersIcaAdmin():
+    try:
+        icaAdminMail = flask_login.current_user.id
 
-@icaAdmin.route("/")
-def hello():
-    return "<h1 style='color:blue'>Hello There!</h1>"
+        icaAdminUser = session.query(User).filter_by(mail = icaAdminMail).first().idUser
+        icaAdminId = session.query(ICAAdmin).filter_by(idUser = icaAdminUser).first().idICA_Admin
+        managersIcaAdmin = session.query(Manager).filter_by(idICA_Admin = icaAdminId).all()
+
+        managers = []
+        for manager in managersIcaAdmin:
+            managerUser = session.query(User).filter_by(idUser = manager.idUser).first()
+            currentmanager = {
+                "name": managerUser.name,
+                "mail": managerUser.mail
+            }
+            managers.append(currentmanager)
+
+        return jsonify(managers)
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e) 
+
+    return "ICA Deleted", 200
+
+session.close()
