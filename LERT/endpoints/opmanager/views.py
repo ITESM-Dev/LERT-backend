@@ -309,6 +309,7 @@ def getIcas():
         for ica in icasDB:
 
             currentIca = {
+                "id": ica.idICA,
                 "icaCode": ica.icaCode,
                 "icaCore": ica.icaCore,
                 "year": ica.year,
