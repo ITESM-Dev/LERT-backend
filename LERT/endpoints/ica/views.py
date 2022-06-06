@@ -8,6 +8,9 @@ from LERT.db.database import connection
 import requests
 from LERT.endpoints.ica.models import ICA
 import datetime
+from LERT.endpoints.manager.models import Manager
+
+from LERT.endpoints.user.models import User
 
 ica = Blueprint('ica', __name__)
 
@@ -82,6 +85,13 @@ def createICA():
         )
 
         session.add(ica1)
+
+        managerID = session.query(User).filter_by(mail = icaOwnerReq).first().idUser
+        
+        session.query(Manager).\
+            filter_by(idUser = managerID).\
+            update({Manager.idICA: ica1.idICA})
+
         session.commit() 
         
     except requests.exceptions.RequestException as e:  # This is the correct syntax
