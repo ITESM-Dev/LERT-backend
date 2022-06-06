@@ -56,4 +56,4 @@ def deleteUserRoles():
     except Exception as e:
         print(e)
 
-    return "User role deleted", 200
+    return "User role Deleted", 200
