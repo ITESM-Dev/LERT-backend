@@ -118,7 +118,7 @@ def getHourTypes():
     except Exception as e:
         print(e)
 
-        return jsonify(hourTypes)
+    return jsonify(hourTypes)
 
 @opManager.route("/getManagers", methods=['GET'])
 @cross_origin()
