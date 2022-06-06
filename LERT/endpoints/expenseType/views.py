@@ -16,7 +16,6 @@ session = Session(connection.e)
 @flask_login.login_required
 def createExpenseType():
 
-    statusCode = flask.Response(status=201)
     typeReq = flask.request.json['type']
 
     try:
@@ -30,7 +29,9 @@ def createExpenseType():
     except Exception as e:
         print(e)
         
-    return statusCode
+    id = {"id": expenseType1.idExpenseType }
+
+    return id, 201 
 
 @expenseType.route("/getExpenseTypes", methods=['GET'])
 @cross_origin()
