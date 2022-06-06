@@ -277,8 +277,7 @@ def getExpenses():
         else:
             user_id = ""
             user_mail = ""
-        print(managerIdICA, file =stderr)
-        idUserICAAdmin = session.query(ICAAdmin).filter_by(idICA_Admin = managerIdICA).first().idUser
+        idUserICAAdmin = session.query(ICAAdmin).filter_by(idICA_Admin = managerIdICAAdmin).first().idUser
         mailICAAdmin = session.query(User).filter_by(idUser = idUserICAAdmin).first().mail
         idUserOpManager = session.query(OpManager).filter_by(idOPManager = managerIdOPManager).first().idUser
         mailOPManager = session.query(User).filter_by(idUser = idUserOpManager).first().mail
@@ -439,7 +438,7 @@ def reportExpense():
                 user_mail = ""
             
 
-            idUserICAAdmin = session.query(ICAAdmin).filter_by(idICA_Admin = managerIdICA).first().idUser
+            idUserICAAdmin = session.query(ICAAdmin).filter_by(idICA_Admin = managerIdICAAdmin).first().idUser
             mailICAAdmin = session.query(User).filter_by(idUser = idUserICAAdmin).first().mail
             idUserOpManager = session.query(OpManager).filter_by(idOPManager = managerIdOPManager).first().idUser
             mailOPManager = session.query(User).filter_by(idUser = idUserOpManager).first().mail
@@ -461,9 +460,7 @@ def reportExpense():
             result_expenses.append(current)
         
         for item in result_expenses:
-            print((item["date"]), file=stderr)
-            if item["date"] >= str(startDateReq) and item["date"] <= str(endDateReq):
-                print("INSIDE", file=stderr)
+            if item["date"] >= (startDateReq.date()) and item["date"] <= (endDateReq).date():
                 report.append(item)
 
         import json
@@ -493,13 +490,15 @@ def reportExpense():
             csv_writer.writerow(emp.values())
     
         data_file.close()
+
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)
     except Exception as e:
         print(e) 
-
+    
     cwd = os.getcwd()
-
+    
+    #return "200"
     return send_file(cwd+"/data_file.csv", attachment_filename="data_file.csv")
 
 session.close()
