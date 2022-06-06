@@ -453,5 +453,31 @@ def deleteIca():
 
     return "ICA Deleted", 200
 
+@opManager.route("/getAvailableManagersICA", methods=['GET'])
+@cross_origin()
+@flask_login.login_required
+def getAvailableManagersICA():
+    try:
+        managersDB = session.query(Manager).filter_by(idICA = None).all()
+        
+        managers = []
+
+        for manager in managersDB:
+
+            managerIDUser = session.query(Manager).filter_by(idManager = manager.idManager).first().idUser
+            managerMail = session.query(User).filter_by(idUser = managerIDUser).first().mail
+            
+            currentManager = {
+                "mail": managerMail
+            }
+
+            managers.append(currentManager)
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e)
+
+    return jsonify(managers), 200
 
 session.close()
