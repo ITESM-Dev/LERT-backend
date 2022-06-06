@@ -16,7 +16,7 @@ session = Session(connection.e)
 @ica.route("/createIca", methods = ['POST'])
 @cross_origin()
 @flask_login.login_required
-def createCurrentPeriod():
+def createICA():
     
     icaCodeReq = flask.request.json['icaCode']
     icaCoreReq = flask.request.json['icaCore']
@@ -25,7 +25,7 @@ def createCurrentPeriod():
     icaOwnerReq = flask.request.json['icaOwner']
     budgetReq = int(flask.request.json['budget'])
     countryReq = flask.request.json['country']
-    statusReq = flask.request.json['status']
+    statusReq = "Active"
     deptoReq = flask.request.json['depto']
     frequencyBillReq = flask.request.json['frequencyBill']
     ccReq = flask.request.json['cc']
@@ -38,12 +38,12 @@ def createCurrentPeriod():
     descriptionReq = flask.request.json['description']
     typeReq  = flask.request.json['type']
     necReq = int(flask.request.json['nec'])
-    totalPlusTaxesReq  = int(flask.request.json['totalPlusTaxes'])
+    totalPlusTaxesReq  = 0
     startDateReq = flask.request.json['startDate']
     endDateReq = flask.request.json['endDate']
     ctyNamePerfReq = flask.request.json['ctyNamePerf']
     rCtyPerfReq = flask.request.json['rCtyPerf']
-    totalBillingReq = int(flask.request.json['totalBilling'])
+    totalBillingReq = 0
     
     try:
         y, m, d = startDateReq.split('-')
