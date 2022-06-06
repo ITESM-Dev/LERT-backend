@@ -138,11 +138,17 @@ def getAvailableResources():
         managerUserID = session.query(User).filter_by(mail = managerMail).first().idUser
         managerID = session.query(Manager).filter_by(idUser = managerUserID).first().idManager
 
-        resources = session.query(association_table_Manager_Resource).filter(association_table_Manager_Resource.c.idManager != managerID).all()
-        
+    
+        resources = session.query(Resource).all()
+
         resultResources = []
 
         for current in resources:
+
+            resourcesManager = session.query(association_table_Manager_Resource).filter(association_table_Manager_Resource.c.idSerial == current.idSerial).first()
+
+            if resourcesManager != None and resourcesManager.idManager == managerID:
+                continue
 
             currResourceIDUser = session.query(Resource).filter_by(idSerial = current.idSerial).first().idUser
             currResourceMail = session.query(User).filter_by(idUser = currResourceIDUser).first().mail
