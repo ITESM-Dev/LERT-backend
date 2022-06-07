@@ -22,6 +22,7 @@ from LERT.endpoints.expense.models import association_table_Expense_Resource
 from LERT.endpoints.manager.models import association_table_Manager_Resource
 from LERT.endpoints.authorization.roles import opManager_permission, icaAdmin_permission
 from flask_cors import cross_origin
+from sqlalchemy import or_
 import requests
 
 manager = Blueprint('manager', __name__)
@@ -508,5 +509,30 @@ def reportExpense():
     
     #return "200"
     return send_file(cwd+"/data_file.csv", attachment_filename="data_file.csv")
+
+@manager.route("/getAvailableDelegates", methods=['GET'])
+@cross_origin()
+@flask_login.login_required
+def getAvailableDelegates():
+    
+    try:
+        delegates = session.query(User).filter(or_(User.role == "Resource", User.role == "IcaAdmin")).all()
+
+        availableDelegates = []
+
+        for currentDelegate in delegates:
+
+            delegate = {
+                "mail": currentDelegate.mail,
+            }
+
+            availableDelegates.append(delegate)
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)
+    except Exception as e:
+        print(e)
+    
+    return jsonify(availableDelegates), 200
 
 session.close()
