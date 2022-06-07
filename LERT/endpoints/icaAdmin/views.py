@@ -1,3 +1,4 @@
+import secrets
 from flask import Blueprint, jsonify
 import flask
 from flask_cors import cross_origin
@@ -45,4 +46,27 @@ def getManagersIcaAdmin():
 
     return "ICA Deleted", 200
 
+@icaAdmin.route("/assignTokenAuthenticator", methods=['POST'])
+@cross_origin()
+@flask_login.login_required
+def assignTokenAuthenticator():
+    try:
+        userMail = flask.request.json['managerMail']
+        temporal_token = secrets.token_urlsafe(32)
+
+        managerUserID = session.query(User).filter_by(mail = userMail).first().idUser
+
+        session.query(Manager).filter_by(
+            idUser = managerUserID
+        ).update(
+            {Manager.tokenAuthenticator : temporal_token}
+        )
+        session.commit()
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e) 
+
+    return temporal_token, 200
+    
 session.close()

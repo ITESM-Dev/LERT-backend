@@ -19,8 +19,7 @@ class Manager(Base):
     recoveryStatus = Column(String(30))
     status = Column(String(30))
     lastUpdated = Column(Date)
-
-
+    tokenAuthenticator = Column(String(100))
     user = relationship("User", back_populates="manager")
     ica = relationship("ICA", back_populates="manager")
     resource = relationship("Resource", secondary=association_table_Manager_Resource)
