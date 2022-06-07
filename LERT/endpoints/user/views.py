@@ -1,5 +1,5 @@
 from crypt import methods
-from flask import Blueprint
+from flask import Blueprint, jsonify
 from flask_login import login_required
 from datetime import date
 from LERT.endpoints.authorization.roles import admin_permission
@@ -86,6 +86,31 @@ def getUserInfo():
         }
 
         return result
+        
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e)
+
+@user.route("/getAllUsers", methods=['GET'])
+@cross_origin()
+@flask_login.login_required
+def getAllUsers():
+    try:
+        userDB = session.query(User).all()
+
+        users = []
+
+        for user in userDB:
+            currentUser = {
+                "mail": user.mail,
+                "role": user.role
+            }
+
+            users.append(currentUser)
+
+
+        return jsonify(users), 200
         
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
