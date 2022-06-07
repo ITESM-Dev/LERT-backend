@@ -278,16 +278,20 @@ def getExpenses():
         else:
             user_id = ""
             user_mail = ""
-        idUserICAAdmin = session.query(ICAAdmin).filter_by(idICA_Admin = managerIdICAAdmin).first().idUser
-        mailICAAdmin = session.query(User).filter_by(idUser = idUserICAAdmin).first().mail
+        idUserICAAdmin = session.query(ICAAdmin).filter_by(idICA_Admin = managerIdICAAdmin).first()
+        if(idUserICAAdmin == None):
+            mailICAAdmin = None
+        else:
+            mailICAAdmin = session.query(User).filter_by(idUser = idUserICAAdmin.idUser).first().mail
         idUserOpManager = session.query(OpManager).filter_by(idOPManager = managerIdOPManager).first().idUser
         mailOPManager = session.query(User).filter_by(idUser = idUserOpManager).first().mail
+        
         
         current = {
             'id_expense': expense.idExpense,
             "type": expenseType,
             "cost": expense.cost,
-            "date": expense.date,
+            "date": str(expense.date),
             "comment": expense.comment,
             "idICA": managerIdICA,
             "idEmployee": user_id,
