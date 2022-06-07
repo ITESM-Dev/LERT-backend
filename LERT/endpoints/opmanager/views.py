@@ -153,7 +153,7 @@ def getManagers():
                 "mail": currentMail,
                 "status": current.status,
                 "recoveryStatus": current.recoveryStatus,
-                "lastUpdated": current.lastUpdated
+                "lastUpdated": str(current.lastUpdated)
             }
 
             resultManagers.append(currentManager)
