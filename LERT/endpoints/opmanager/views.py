@@ -15,6 +15,7 @@ from LERT.endpoints.user.models import User
 from LERT.endpoints.currentPeriod.models import CurrentPeriod
 from LERT.endpoints.bandType.models import BandType
 from LERT.endpoints.hourType.models import HourType
+from LERT.endpoints.resourceExpense.models import ResourceExpense
 import datetime
 
 opManager = Blueprint('opManager', __name__)
@@ -85,15 +86,25 @@ def updateBandTypes():
 @flask_login.login_required
 def deleteBandTypes():
     try:
-        bandTypeIdReq = int(flask.request.json['id'])
-        bandTypeDb = session.query(BandType).filter_by(idBandType = bandTypeIdReq).first()
-        session.delete(bandTypeDb)
+
+        bandTypeIDReq = int(flask.request.json['id'])
+        bandTypeDB = session.query(BandType).filter_by(idBandType = bandTypeIDReq).first()
+        hourType = session.query(HourType).filter_by(idBandType = bandTypeDB.idBandType).first()        
+        resourceExpense = session.query(ResourceExpense).filter_by(idHourType = hourType.idHourType)
+
+        resourceExpense.update({ResourceExpense.idHourType:None})
+        hourType.idBandType = None
+
         session.commit()
+        session.delete(bandTypeDB)
+        session.delete(hourType)
+        session.commit()
+
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e) 
-
+ 
     return "Band Type Deleted", 200
 
 @opManager.route("/getHourTypes", methods=['GET'])
