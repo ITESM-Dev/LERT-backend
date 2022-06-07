@@ -329,9 +329,18 @@ def updateExpenses():
 @flask_login.login_required
 def deleteExpenses():
     try:
+
         expenseIDReq = int(flask.request.json['id'])
         expenseDB = session.query(Expense).filter_by(idExpense = expenseIDReq).first()
-        session.delete(expenseDB)
+        expenseType = session.query(ExpenseType).filter_by(idExpenseType = expenseDB.idExpenseType).first()
+        resourceExpense = session.query(ResourceExpense).filter_by(idExpense = expenseDB.idExpense)
+
+        if expenseType == "Salary" or expenseType == "Double" or expenseType == "Triple" : 
+            session.delete(resourceExpense.first())
+        
+        resource_expense = session.query(association_table_Expense_Resource).filter(association_table_Expense_Resource.c.idExpense == expenseDB.idExpense).first()
+        print(resource_expense, file=stderr)
+            session.delete(expenseDB)
         session.commit()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
