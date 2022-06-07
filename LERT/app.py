@@ -1,3 +1,4 @@
+from multiprocessing import Manager
 from LERT.db import database
 from LERT.endpoints.ica.views import ica
 from LERT.endpoints.opmanager.views import opManager
@@ -6,6 +7,7 @@ from LERT.endpoints.expenseType.views import expenseType
 from LERT.endpoints.hourType.views import hourType
 from LERT.endpoints.bandType.views import bandType
 from LERT.endpoints.user.models import User
+from LERT.endpoints.manager.models import Manager
 from LERT.endpoints.user.views import user
 from LERT.endpoints.administrator.views import admin
 from LERT.endpoints.icaAdmin.views import icaAdmin
@@ -61,8 +63,6 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 VIDA_TOKEN = 1000 * 60 * 3
-
-
 
 @login_manager.user_loader
 def load_user(idUser):  
@@ -197,15 +197,6 @@ def login():
     session3.close()
     return result, 200
 
-@app.route('/protegido')
-@cross_origin()
-@login_required
-@admin_permission.require(http_exception=403)
-def protegido():
-    session2 = Session(connection.e)
-    session2.close()
-    return(flask_login.current_user.role)
-
 @app.errorhandler(403)
 def permission_denied(e):
     return "Forbidden", 403
@@ -226,7 +217,62 @@ def logout():
     session2.close()
     return "Logged Out", 200
 
-#session2.close()
+
+@app.route('/loginICAAdmin', methods=['POST'])
+@cross_origin()
+def loginICAAdmin():
+    session3 = Session(connection.e)
+    try:
+        userMail = flask.request.json['mailManager']
+        userToken = flask.request.json['token']
+
+        userDBQuery = session3.query(User).filter_by(mail = userMail)
+        userDB = userDBQuery.first()
+        userMail = userDB.mail
+    except Exception as e:
+        return "Email is not valid", 401 
+
+    try:
+        userToken = flask.request.json['token']
+        managerDB = session3.query(Manager).filter_by(idUser = userDB.idUser).first()
+        print(managerDB.idUser, file=sys.stderr)
+        tokenDB = managerDB.tokenAuthenticator
+
+        if tokenDB != userToken:
+            return "Token is not valid", 401
+                    
+    except:
+        return "Token is not valid", 401 
+
+    token = secrets.token_urlsafe(32)
+    expiration = time.time()
+
+    ph = PasswordHasher()
+
+    userDBQuery.\
+        update({User.token: ph.hash(token)}, synchronize_session='fetch')
+    
+    userDBQuery.\
+        update({User.expiration: expiration}, synchronize_session='fetch')
+
+    session3.commit()  
+
+    result = {
+        "id": userDB.idUser,
+        "name": userDB.name,
+        "mail": userDB.mail,
+        "band": userDB.band,
+        "role": userDB.role,
+        "country": userDB.country,
+        "token": token
+    }
+
+    managerDB.tokenAuthenticator = None
+    session3.commit()
+    session3.close()
+    return result, 200
+
+
 
 if __name__ == "__main__":
     create_app().run()
