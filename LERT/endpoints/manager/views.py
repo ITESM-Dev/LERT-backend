@@ -339,8 +339,7 @@ def deleteExpenses():
             session.delete(resourceExpense.first())
         
         resource_expense = session.query(association_table_Expense_Resource).filter(association_table_Expense_Resource.c.idExpense == expenseDB.idExpense).first()
-        print(resource_expense, file=stderr)
-            session.delete(expenseDB)
+        session.delete(expenseDB)
         session.commit()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
