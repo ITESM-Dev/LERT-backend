@@ -9,8 +9,8 @@ import requests
 from LERT.endpoints.ica.models import ICA
 import datetime
 from LERT.endpoints.manager.models import Manager
-
 from LERT.endpoints.user.models import User
+from LERT.endpoints.authorization.roles import opManager_permission
 
 ica = Blueprint('ica', __name__)
 
@@ -19,6 +19,7 @@ session = Session(connection.e)
 @ica.route("/createIca", methods = ['POST'])
 @cross_origin()
 @flask_login.login_required
+@opManager_permission.require(http_exception=403)
 def createICA():
     
     icaCodeReq = flask.request.json['icaCode']
