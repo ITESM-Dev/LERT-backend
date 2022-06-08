@@ -491,11 +491,19 @@ def reportExpense():
 def getAvailableDelegates():
     
     try:
-        delegates = session.query(User).filter(or_(User.role == "Resource", User.role == "IcaAdmin")).all()
+        managerMail = flask_login.current_user.id
+        managerUserID = session.query(User).filter_by(mail = managerMail).first().idUser
+        managerQuery = session.query(Manager).filter_by(idUser = managerUserID).first()
+
+        delegates = session.query(User).filter(User.role == "IcaAdmin").all()
 
         availableDelegates = []
 
         for currentDelegate in delegates:
+            icaAdminID = session.query(ICAAdmin).filter_by(idUser = currentDelegate.idUser).first().idICA_Admin
+            
+            if managerQuery.idICA_Admin == icaAdminID:
+                continue
 
             delegate = {
                 "mail": currentDelegate.mail,
