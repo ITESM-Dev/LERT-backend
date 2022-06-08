@@ -32,7 +32,7 @@ def createExpense():
     # TODO tipo de dato de date -> Date !String
             
     try:
-        mailReq = flask.request.json['mail']
+        mailReq = flask.request.json['mailResource']
         costReq = int(flask.request.json['cost'])
         dateReq = flask.request.json['date']
         commentReq = flask.request.json['comment']
