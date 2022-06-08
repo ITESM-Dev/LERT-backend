@@ -9,6 +9,7 @@ from LERT.db.database import connection
 from LERT.endpoints.bandType.models import BandType
 import requests
 import datetime
+from LERT.endpoints.authorization.roles import opManager_permission
 
 bandType = Blueprint('bandType', __name__)
 
@@ -17,6 +18,7 @@ session = Session(connection.e)
 @bandType.route("/createBandType", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@opManager_permission.require(http_exception=403)
 def createBandType():
 
     typeReq = flask.request.json['type']

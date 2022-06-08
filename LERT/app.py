@@ -37,6 +37,17 @@ app.secret_key = secrets.token_urlsafe(16)
 
 CORS(app)
 
+principals = Principal(app)
+principals._init_app(app)
+
+admin_permission = Permission(RoleNeed('Admin'))
+opManager_permission = Permission(RoleNeed('OpManager'))
+manager_permission = Permission(RoleNeed('Manager'))
+icaAdmin_permission = Permission(RoleNeed('IcaAdmin'))
+manager_or_IcaAdmin = Permission(RoleNeed('Manager'), RoleNeed('IcaAdmin'))
+manager_or_OpManager = Permission(RoleNeed('Manager'), RoleNeed('OpManager'))
+manager_or_OpManager_or_icaAdmin = Permission(RoleNeed('Manager'), RoleNeed('OpManager'), RoleNeed('IcaAdmin'))
+
 def create_app():
 
     if os.getenv('ENVIRONMENT') == 'dev':
@@ -118,15 +129,6 @@ def request_loader(request):
     identity_changed.send(current_app._get_current_object(), identity=Identity(userDB.idUser))
     session2.close()
     return result
-
-principals = Principal(app)
-principals._init_app(app)
-admin_permission = Permission(RoleNeed('Admin'))
-opManager_permission = Permission(RoleNeed('OpManager'))
-manager_permission = Permission(RoleNeed('Manager'))
-icaAdmin_permission = Permission(RoleNeed('IcaAdmin'))
-manager_or_IcaAdmin = Permission(RoleNeed('Manager'), RoleNeed('IcaAdmin'))
-manager_or_OpManager = Permission(RoleNeed('Manager'), RoleNeed('OpManager'))
 
 @identity_loaded.connect_via(app)
 def on_identity_loaded(sender, identity):
@@ -221,6 +223,7 @@ def logout():
 
 @app.route('/loginICAAdmin', methods=['POST'])
 @cross_origin()
+@icaAdmin_permission.require(http_exception=403)
 def loginICAAdmin():
     session3 = Session(connection.e)
     try:

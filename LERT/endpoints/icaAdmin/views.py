@@ -10,8 +10,8 @@ from LERT.endpoints.icaAdmin.models import ICAAdmin
 from sqlalchemy.orm import Session
 from LERT.endpoints.manager.models import Manager
 from LERT.endpoints.user.models import User
-
 from LERT.endpoints.user.models import User
+from LERT.endpoints.authorization.roles import icaAdmin_permission
 
 icaAdmin = Blueprint('icaAdmin', __name__)
 
@@ -20,6 +20,7 @@ session = Session(connection.e)
 @icaAdmin.route("/getManagersIcaAdmin", methods=['GET'])
 @cross_origin()
 @flask_login.login_required
+@icaAdmin_permission.require(http_exception=403)
 def getManagersIcaAdmin():
     try:
         icaAdminMail = flask_login.current_user.id
@@ -37,18 +38,17 @@ def getManagersIcaAdmin():
             }
             managers.append(currentmanager)
 
-        return jsonify(managers)
-
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e) 
 
-    return "ICA Deleted", 200
+    return jsonify(managers)
 
 @icaAdmin.route("/assignTokenAuthenticator", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@icaAdmin_permission.require(http_exception=403)
 def assignTokenAuthenticator():
     try:
         userMail = flask.request.json['managerMail']

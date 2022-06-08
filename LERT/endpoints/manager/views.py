@@ -1,6 +1,7 @@
 from crypt import methods
 import datetime
 import os
+import csv
 from sys import stderr
 from flask import Blueprint, jsonify, send_file
 import flask
@@ -20,7 +21,7 @@ from LERT.endpoints.user.models import User
 from LERT.endpoints.resource.models import Resource
 from LERT.endpoints.expense.models import association_table_Expense_Resource
 from LERT.endpoints.manager.models import association_table_Manager_Resource
-from LERT.endpoints.authorization.roles import opManager_permission, icaAdmin_permission
+from LERT.endpoints.authorization.roles import opManager_permission, manager_or_IcaAdmin, manager_permission, manager_or_OpManager
 from flask_cors import cross_origin
 from sqlalchemy import or_
 import requests
@@ -32,6 +33,7 @@ session = Session(connection.e)
 @manager.route("/setOpManager", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@opManager_permission.require(http_exception=403)
 def setOpManager():
     try:
         managerMail = flask.request.json['managerMail']
@@ -60,6 +62,7 @@ def setOpManager():
 @manager.route("/setIcaAdmin", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@manager_or_OpManager.require(http_exception=403)
 def setIcaAdmin():
     try:
         icaAdminMail = flask.request.json['icaAdminMail']
@@ -78,11 +81,12 @@ def setIcaAdmin():
     except Exception as e:
         print(e)
 
-    return "Manager assigned to IcaAdmin", 200
+    return "IcaAdmin assigned to Manager", 200
 
 @manager.route("/assignResourceToManager", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@manager_permission.require(http_exception=403)
 def assignResourceToManager():
     try:
         managerMailReq = flask.request.json['managerMail']
@@ -117,6 +121,7 @@ def assignResourceToManager():
 @manager.route("/getManagerICA", methods=['GET'])
 @cross_origin()
 @flask_login.login_required
+@manager_permission.require(http_exception=403)
 def getManagerICA():
     try:
         managerMail = flask_login.current_user.id
@@ -139,6 +144,7 @@ def getManagerICA():
 @manager.route("/getAvailableResources", methods=['GET'])
 @cross_origin()
 @flask_login.login_required
+@manager_permission.require(http_exception=403)
 def getAvailableResources():
     try:
         managerMail = flask_login.current_user.id
@@ -176,6 +182,7 @@ def getAvailableResources():
 @manager.route("/getResources", methods=['GET'])
 @cross_origin()
 @flask_login.login_required
+@manager_permission.require(http_exception=403)
 def getResources():
     try:
         managerMail = flask_login.current_user.id
@@ -216,40 +223,10 @@ def getResources():
 
     return jsonify(resultResources), 200
 
-
-@manager.route("/updateResources", methods=['POST'])
-@cross_origin()
-@flask_login.login_required
-def updateResources():
-    try:
-        idResourceReq = flask.request.json['id']
-        resourceNameReq = flask.request.json['name']
-        resourceBandReq = int(flask.request.json['band'])
-        resourceRoleReq = flask.request.json['role']
-        resourceCountryReq = flask.request.json['country']
-
-        session.query(User).filter_by(
-            idUser = idResourceReq
-            ).update(
-                {
-                    User.name: resourceNameReq, 
-                    User.band: resourceBandReq, 
-                    User.role: resourceRoleReq,
-                    User.country: resourceCountryReq
-                }
-            )
-
-        session.commit()
-
-    except requests.exceptions.RequestException as e:  # This is the correct syntax
-        raise SystemExit(e)        
-    except Exception as e:
-        print(e)
-    return "Resource updated", 200
-
 @manager.route("/getExpenses", methods=['GET'])
 @cross_origin()
 @flask_login.login_required
+@manager_or_IcaAdmin.require(http_exception=403)
 def getExpenses():
 
     result_expenses = []
@@ -308,6 +285,7 @@ def getExpenses():
 @manager.route("/updateExpense", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@manager_or_IcaAdmin.require(http_exception=403)
 def updateExpenses():
     try:
         expenseIDReq = int(flask.request.json['id'])
@@ -332,6 +310,7 @@ def updateExpenses():
 @manager.route("/deleteExpense", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@manager_or_IcaAdmin.require(http_exception=403)
 def deleteExpenses():
     try:
 
@@ -357,6 +336,7 @@ def deleteExpenses():
 @manager.route("/expensesForQuarter", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@manager_or_IcaAdmin.require(http_exception=403)
 def expensesForQuarter():
     
     try: 
@@ -411,6 +391,7 @@ def expensesForQuarter():
 @manager.route("/reportExpense", methods=['GET'])
 @cross_origin()
 @flask_login.login_required
+@manager_or_IcaAdmin.require(http_exception=403)
 def reportExpense():
     try: 
         report = []
@@ -480,31 +461,20 @@ def reportExpense():
         import csv
  
  
-        # Opening JSON file and loading the data
-        # into the variable data
-        
-        
-        # now we will open a file for writing
         data_file = open('data_file.csv', 'w')
-        
-        # create the csv writer object
         csv_writer = csv.writer(data_file)
-        
-        # Counter variable used for writing
-        # headers to the CSV file
+
         count = 0
         for emp in report:
             if count == 0:
-                # Writing headers of CSV file
                 header = emp.keys()
                 csv_writer.writerow(header)
                 count += 1
-            # Writing data of CSV file
+
             csv_writer.writerow(emp.values())
     
         data_file.close()
-
-    except requests.exceptions.RequestException as e:  # This is the correct syntax
+    except requests.exceptions.RequestException as e:  
         raise SystemExit(e)
     except Exception as e:
         print(e) 
@@ -517,6 +487,7 @@ def reportExpense():
 @manager.route("/getAvailableDelegates", methods=['GET'])
 @cross_origin()
 @flask_login.login_required
+@manager_or_OpManager.require(http_exception=403)
 def getAvailableDelegates():
     
     try:
@@ -542,6 +513,7 @@ def getAvailableDelegates():
 @manager.route("/getICAAdminManager", methods=['GET'])
 @cross_origin()
 @flask_login.login_required
+@manager_permission.require(http_exception=403)
 def getICAAdminManager():
     try:
         managerMail = flask_login.current_user.id
@@ -574,6 +546,7 @@ def getICAAdminManager():
 @manager.route("/deleteIcaAdminFromManager", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@manager_or_OpManager.require(http_exception=403)
 def deleteIcaAdminFromManager():
     try:
         

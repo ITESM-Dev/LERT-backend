@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from LERT.db.database import connection
 import requests
 from LERT.endpoints.currentPeriod.models import CurrentPeriod
+from LERT.endpoints.authorization.roles import opManager_permission
 
 currentPeriod = Blueprint('currentPeriod', __name__)
 
@@ -15,6 +16,7 @@ session = Session(connection.e)
 @currentPeriod.route("/createCurrentPeriod", methods = ['POST'])
 @cross_origin()
 @flask_login.login_required
+@opManager_permission.require(http_exception=403)
 def createCurrentPeriod():
 
     statusCode = flask.Response(status=201)

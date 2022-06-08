@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from LERT.db.database import connection
 import requests
 from LERT.endpoints.expenseType.models import ExpenseType
+from LERT.endpoints.authorization.roles import manager_or_OpManager_or_icaAdmin, opManager_permission
 
 expenseType = Blueprint('expenseType', __name__)
 
@@ -14,6 +15,7 @@ session = Session(connection.e)
 @expenseType.route("/createExpenseType", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@opManager_permission.require(http_exception=403)
 def createExpenseType():
 
     typeReq = flask.request.json['type']
@@ -36,6 +38,7 @@ def createExpenseType():
 @expenseType.route("/getExpenseTypes", methods=['GET'])
 @cross_origin()
 @flask_login.login_required
+@manager_or_OpManager_or_icaAdmin.require(http_exception=403)
 def getExpenseType():
     try:
         expenseTypes = session.query(ExpenseType).all()
@@ -60,6 +63,7 @@ def getExpenseType():
 @expenseType.route("/updateExpenseType", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@opManager_permission.require(http_exception=403)
 def updateExpenseType():
     try:
 
@@ -83,6 +87,7 @@ def updateExpenseType():
 @expenseType.route("/deleteExpenseType", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@opManager_permission.require(http_exception=403)
 def deleteExpenseType():
     try:
         idExpenseTypeReq = flask.request.json['id']

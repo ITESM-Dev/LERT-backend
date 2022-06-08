@@ -8,12 +8,14 @@ from sqlalchemy.orm import Session
 from LERT.db.database import connection
 from LERT.endpoints.administrator.models import Administrator
 from LERT.endpoints.user.models import User
+from LERT.endpoints.authorization.roles import admin_permission
 
 admin = Blueprint('admin', __name__)
 
 @admin.route("/updateUserRoles", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@admin_permission.require(http_exception=403)
 def getUserInfo():
     session = Session(connection.e)
     try:
@@ -38,6 +40,7 @@ def getUserInfo():
 @admin.route("/deleteUserRoles", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@admin_permission.require(http_exception=403)
 def deleteUserRoles():
     session = Session(connection.e)
     try:

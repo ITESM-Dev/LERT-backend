@@ -17,6 +17,7 @@ from LERT.endpoints.currentPeriod.models import CurrentPeriod
 from LERT.endpoints.bandType.models import BandType
 from LERT.endpoints.hourType.models import HourType
 from LERT.endpoints.resourceExpense.models import ResourceExpense
+from LERT.endpoints.authorization.roles import opManager_permission, manager_or_OpManager_or_icaAdmin, manager_or_OpManager
 import datetime
 
 opManager = Blueprint('opManager', __name__)
@@ -26,6 +27,7 @@ session = Session(connection.e)
 @opManager.route("/getBandTypes", methods=['GET'])
 @cross_origin()
 @flask_login.login_required
+@manager_or_OpManager_or_icaAdmin.require(http_exception=403)
 def getBandTypes():
     try:
         bandTypesDB = session.query(BandType).all()
@@ -52,6 +54,7 @@ def getBandTypes():
 @opManager.route("/updateBandType", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@opManager_permission.require(http_exception=403)
 def updateBandTypes():
     try:
         bandTypeIdReq = int(flask.request.json['id'])
@@ -85,6 +88,7 @@ def updateBandTypes():
 @opManager.route("/deleteBandType", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@opManager_permission.require(http_exception=403)
 def deleteBandTypes():
     try:
 
@@ -111,6 +115,7 @@ def deleteBandTypes():
 @opManager.route("/getHourTypes", methods=['GET'])
 @cross_origin()
 @flask_login.login_required
+@manager_or_OpManager_or_icaAdmin.require(http_exception=403)
 def getHourTypes():
     try:
         hourTypesDB = session.query(HourType).all()
@@ -136,6 +141,7 @@ def getHourTypes():
 @opManager.route("/getManagers", methods=['GET'])
 @cross_origin()
 @flask_login.login_required
+@opManager_permission.require(http_exception=403)
 def getManagers():
     try:
         opManagerMail = flask_login.current_user.id
@@ -159,7 +165,7 @@ def getManagers():
 
             resultManagers.append(currentManager)
 
-    except requests.exceptions.RequestException as e:  # This is the correct syntax
+    except requests.exceptions.RequestException as e: 
         raise SystemExit(e)        
     except Exception as e:
         print(e)
@@ -168,6 +174,7 @@ def getManagers():
 @opManager.route("/updateManager", methods=['PATCH'])
 @cross_origin()
 @flask_login.login_required
+@opManager_permission.require(http_exception=403)
 def updateManager():
     try:
         statusCode = flask.Response(status=201)
@@ -197,6 +204,7 @@ def updateManager():
 @opManager.route("/updateHourType", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@opManager_permission.require(http_exception=403)
 def updateHourType():
     try:
         hourTypeIdReq = int(flask.request.json['id'])
@@ -230,6 +238,7 @@ def updateHourType():
 @opManager.route("/deleteHourType", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@opManager_permission.require(http_exception=403)
 def deleteHourType():
     try:
         hourTypeIdReq = int(flask.request.json['id'])
@@ -247,6 +256,7 @@ def deleteHourType():
 @opManager.route("/getCurrentPeriods", methods=['GET'])
 @cross_origin()
 @flask_login.login_required
+@manager_or_OpManager_or_icaAdmin.require(http_exception=403)
 def getCurrentPeriods():
     try:
         currentPeriodsDB = session.query(CurrentPeriod).all()
@@ -271,6 +281,7 @@ def getCurrentPeriods():
 @opManager.route("/updateCurrentPeriod", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@opManager_permission.require(http_exception=403)
 def updateCurrentPeriod():
     try:
         currentPeriodIdReq = int(flask.request.json['id'])
@@ -296,6 +307,7 @@ def updateCurrentPeriod():
 @opManager.route("/deleteCurrentPeriod", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@opManager_permission.require(http_exception=403)
 def deleteCurrentPeriod():
     try:
         currentPeriodIdReq = int(flask.request.json['id'])
@@ -313,6 +325,7 @@ def deleteCurrentPeriod():
 @opManager.route("/getIcas", methods=['GET'])
 @cross_origin()
 @flask_login.login_required
+@manager_or_OpManager_or_icaAdmin.require(http_exception=403)
 def getIcas():
     try:
         
@@ -380,6 +393,7 @@ def getIcas():
 @opManager.route("/updateIca", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@opManager_permission.require(http_exception=403)
 def updateIca():
     try:
         idIcaReq = flask.request.json['id']
@@ -452,6 +466,7 @@ def updateIca():
 @opManager.route("/deleteIca", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@opManager_permission.require(http_exception=403)
 def deleteIca():
     try:
         icaIdReq = int(flask.request.json['id'])
@@ -469,6 +484,7 @@ def deleteIca():
 @opManager.route("/getAvailableManagersICA", methods=['GET'])
 @cross_origin()
 @flask_login.login_required
+@opManager_permission.require(http_exception=403)
 def getAvailableManagersICA():
     try:
         managersDB = session.query(Manager).filter_by(idICA = None).all()
@@ -496,6 +512,7 @@ def getAvailableManagersICA():
 @opManager.route("/getManagersNoOpManager", methods=['GET'])
 @cross_origin()
 @flask_login.login_required
+@opManager_permission.require(http_exception=403)
 def getManagersNoOpManager():
     try:
         managersDB = session.query(Manager).filter_by(idOPManager = None).all()
@@ -523,6 +540,7 @@ def getManagersNoOpManager():
 @opManager.route("/getManagersNoIcaAdmins", methods=['GET'])
 @cross_origin()
 @flask_login.login_required
+@manager_or_OpManager.require(http_exception=403)
 def getManagersNoIcaAdmins():
     try:
         managersDB = session.query(Manager).filter_by(idICA_Admin = None).all()
@@ -550,6 +568,7 @@ def getManagersNoIcaAdmins():
 @opManager.route("/getManagerAndIcaAdmins", methods=['GET'])
 @cross_origin()
 @flask_login.login_required
+@opManager_permission.require(http_exception=403)
 def getManagerAndIcaAdmins():
     try:
         managersDB = session.query(Manager).filter(Manager.idICA_Admin != None).all()
@@ -586,6 +605,7 @@ def getManagerAndIcaAdmins():
 @opManager.route("/geICAAdmins", methods=['GET'])
 @cross_origin()
 @flask_login.login_required
+@manager_or_OpManager.require(http_exception=403)
 def geICAAdmins():
     try:
         icaAdminDB = session.query(ICAAdmin).all()
@@ -615,6 +635,7 @@ def geICAAdmins():
 @opManager.route("/OpAssignIcaAdminManager", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@opManager_permission.require(http_exception=403)
 def OpAssignIcaAdminManager():
     try:
         icaAdminMailReq = flask.request.json['icaAdminMail']
@@ -647,6 +668,7 @@ def OpAssignIcaAdminManager():
 @opManager.route("/deleteManagerFromOPManager", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@opManager_permission.require(http_exception=403)
 def deleteManagerFromOPManager():
     try:
         
