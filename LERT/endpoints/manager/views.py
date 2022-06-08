@@ -539,4 +539,67 @@ def getAvailableDelegates():
     
     return jsonify(availableDelegates), 200
 
+@manager.route("/getICAAdminManager", methods=['GET'])
+@cross_origin()
+@flask_login.login_required
+def getICAAdminManager():
+    try:
+        managerMail = flask_login.current_user.id
+        managerUserID = session.query(User).filter_by(mail = managerMail).first().idUser
+        
+        managerIDICA_Admin = session.query(Manager).filter_by(idUser = managerUserID).first()
+
+        resultICA = {
+            "idICA_Admin" : None,
+            "icaMail" : None  
+        }
+
+        if managerIDICA_Admin != None:   
+            icaAdminIDUser = session.query(ICAAdmin).filter_by(idICA_Admin = managerIDICA_Admin.idICA_Admin).first().idUser
+            icaAdminMail = session.query(User).filter_by(idUser = icaAdminIDUser).first().mail
+
+            
+            resultICA = {
+                "idICA_Admin" : icaAdminIDUser,
+                "icaMail" : icaAdminMail 
+            }
+     
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e)
+
+    return resultICA, 200
+
+@manager.route("/deleteIcaAdminFromManager", methods=['POST'])
+@cross_origin()
+@flask_login.login_required
+def deleteIcaAdminFromManager():
+    try:
+        
+        icaAdminMailReq = flask.request.json['icaAdminMail']
+        
+        icaAdminUserQuery = session.query(User).filter_by(mail = icaAdminMailReq).first()
+        
+        if icaAdminUserQuery == None:
+            return "IcaAdmin does not exist"
+         
+        icaAdminQuery = session.query(ICAAdmin).filter_by(idUser = icaAdminUserQuery.idUser).first()
+        
+        session.query(Manager).\
+            filter_by(idICA_Admin = icaAdminQuery.idICA_Admin).\
+            update({
+                Manager.idICA_Admin: None
+            })
+
+        session.commit()
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e) 
+
+    return "Ica Admin unassigned", 200
+
+
 session.close()
