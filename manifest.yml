@@ -2,7 +2,7 @@
 applications:
  - name: LERT-Flask
    random-route: true
-   memory: 100M
+   memory: 500M
    disk_quota: 1G
    buildpacks:
       - https://github.com/cloudfoundry/python-buildpack.git  
