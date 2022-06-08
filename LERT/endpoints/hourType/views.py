@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from LERT.db.database import connection
 from LERT.endpoints.hourType.models import HourType
 from LERT.endpoints.bandType.models import BandType
+from LERT.endpoints.authorization.roles import opManager_permission
 import requests
 import datetime
 
@@ -17,6 +18,7 @@ session = Session(connection.e)
 @hourType.route("/createHourType", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@opManager_permission.require(http_exception=403)
 def createHourType():
     statusCode = flask.Response(status=201)
     typeReq = flask.request.json['type']
