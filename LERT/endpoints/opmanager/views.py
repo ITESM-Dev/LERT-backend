@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from LERT.db.database import connection
 from LERT.endpoints.expense.models import Expense
 from LERT.endpoints.ica.models import ICA
+from LERT.endpoints.icaAdmin.models import ICAAdmin
 from LERT.endpoints.manager.models import Manager
 from LERT.endpoints.opmanager.models import OpManager
 from LERT.endpoints.user.models import User
@@ -491,5 +492,185 @@ def getAvailableManagersICA():
         print(e)
 
     return jsonify(managers), 200
+
+@opManager.route("/getManagersNoOpManager", methods=['GET'])
+@cross_origin()
+@flask_login.login_required
+def getManagersNoOpManager():
+    try:
+        managersDB = session.query(Manager).filter_by(idOPManager = None).all()
+        
+        managers = []
+
+        for manager in managersDB:
+
+            managerIDUser = session.query(Manager).filter_by(idManager = manager.idManager).first().idUser
+            managerMail = session.query(User).filter_by(idUser = managerIDUser).first().mail
+            
+            currentManager = {
+                "mail": managerMail
+            }
+
+            managers.append(currentManager)
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e)
+
+    return jsonify(managers), 200
+
+@opManager.route("/getManagersNoIcaAdmins", methods=['GET'])
+@cross_origin()
+@flask_login.login_required
+def getManagersNoIcaAdmins():
+    try:
+        managersDB = session.query(Manager).filter_by(idICA_Admin = None).all()
+        
+        managers = []
+
+        for manager in managersDB:
+
+            managerIDUser = session.query(Manager).filter_by(idManager = manager.idManager).first().idUser
+            managerMail = session.query(User).filter_by(idUser = managerIDUser).first().mail
+            
+            currentManager = {
+                "mail": managerMail
+            }
+
+            managers.append(currentManager)
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e)
+
+    return jsonify(managers), 200
+
+@opManager.route("/getManagerAndIcaAdmins", methods=['GET'])
+@cross_origin()
+@flask_login.login_required
+def getManagerAndIcaAdmins():
+    try:
+        managersDB = session.query(Manager).filter(Manager.idICA_Admin != None).all()
+        
+        managers = []
+
+        for manager in managersDB:
+            
+            
+            managerQuery = session.query(Manager).filter_by(idManager = manager.idManager).first()
+            managerMailQuery = session.query(User).filter_by(idUser = managerQuery.idUser).first()
+
+            icaAdminIDUser = session.query(ICAAdmin).filter_by(idICA_Admin = manager.idICA_Admin).first()
+            icaAdminMail = session.query(User).filter_by(idUser = icaAdminIDUser.idUser).first()
+
+            if managerQuery == None or icaAdminIDUser == None:
+                continue
+                
+            currentManager = {
+                "managerMail": managerMailQuery.mail,
+                "icaAdminMail": icaAdminMail.mail,
+
+            }
+
+            managers.append(currentManager)
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e)
+
+    return jsonify(managers), 200
+
+@opManager.route("/geICAAdmins", methods=['GET'])
+@cross_origin()
+@flask_login.login_required
+def geICAAdmins():
+    try:
+        icaAdminDB = session.query(ICAAdmin).all()
+        
+        icaAdmins = []
+
+        for icaAdmin in icaAdminDB:
+
+            icaAdminIDUser = session.query(User).filter_by(idUser = icaAdmin.idUser).first()
+            
+            if icaAdminIDUser == None:
+                continue
+
+            currentIcaAdmin = {
+                "mail": icaAdminIDUser.mail
+            }
+
+            icaAdmins.append(currentIcaAdmin)
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e)
+
+    return jsonify(icaAdmins), 200
+
+@opManager.route("/OpAssignIcaAdminManager", methods=['POST'])
+@cross_origin()
+@flask_login.login_required
+def OpAssignIcaAdminManager():
+    try:
+        icaAdminMailReq = flask.request.json['icaAdminMail']
+        managerMailReq = flask.request.json['managerMail']
+        
+        icaAdminUserQuery = session.query(User).filter_by(mail = icaAdminMailReq).first()
+        managerUserQuery = session.query(User).filter_by(mail = managerMailReq).first()
+        
+        
+        if icaAdminUserQuery == None or managerUserQuery == None:
+            return "Ica Admin or Manager does not exist"
+        
+        icaAdminId = session.query(ICAAdmin).filter_by(idUser = icaAdminUserQuery.idUser).first().idICA_Admin
+        
+        session.query(Manager).\
+            filter_by(idUser = managerUserQuery.idUser).\
+            update({
+                Manager.idICA_Admin: icaAdminId
+            })
+
+        session.commit()
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e) 
+
+    return "ICA Admin assigned to Manager", 200
+
+@opManager.route("/deleteManagerFromOPManager", methods=['POST'])
+@cross_origin()
+@flask_login.login_required
+def deleteManagerFromOPManager():
+    try:
+        
+        managerMailReq = flask.request.json['managerMail']
+        
+        managerUserQuery = session.query(User).filter_by(mail = managerMailReq).first()
+        
+        if managerUserQuery == None:
+            return "Manager does not exist"
+        
+        
+        session.query(Manager).\
+            filter_by(idUser = managerUserQuery.idUser).\
+            update({
+                Manager.idOPManager: None
+            })
+
+        session.commit()
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e) 
+
+    return "Manager unassigned", 200
 
 session.close()
