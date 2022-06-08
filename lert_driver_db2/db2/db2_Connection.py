@@ -1,5 +1,4 @@
-import ibm_db
-import ibm_db_dbi
+import ibm_db_sa
 import os
 from sqlalchemy import *
 from sqlalchemy.orm import sessionmaker
@@ -15,21 +14,14 @@ CERTIFICATE = os.environ.get("CERTIFICATE")
 
 class Db2Connection(object):
     def __init__(self): 
-        self.dbstring =  f"DATABASE={DB_NAME};HOSTNAME={DB_HOSTNAME};PROTOCOL=TCPIP;PORT=50000;UID={UID};PWD={DB_PASSWORD}"
-        try:
-            self.ibm_db_conn = ibm_db.connect(self.dbstring, '', '')
-            self._validate_connection()
-            conn = ibm_db_dbi.Connection(self.ibm_db_conn)
-            self.cursor = conn.cursor()
-        except Exception as e:
-            print(e)
+        pass
 
     def _create_connection_sqlAlchemy(self):
         try:
             if os.environ.get('ENVIRONMENT') == "dev":
                 db_string = f"db2+ibm_db://{UID}:{DB_PASSWORD}@{DB_HOSTNAME}:{50000}/{DB_NAME}"
             elif os.environ.get('ENVIRONMENT') == "prod":
-                db_string = f"db2+ibm_db://{UID}:{DB_PASSWORD}@{DB_HOSTNAME}:{32733}/{DB_NAME};SECURITY=SSL"
+                db_string = f"db2+ibm_db://{UID}:{DB_PASSWORD}@{DB_HOSTNAME}:{32733}/{DB_NAME};SECURITY=SSL;"
             self.e = create_engine(db_string)
             self.metadata = MetaData()
             self.Base = declarative_base(metadata=self.metadata)
