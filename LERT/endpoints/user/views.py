@@ -95,6 +95,7 @@ def getUserInfo():
 @user.route("/getAllUsers", methods=['GET'])
 @cross_origin()
 @flask_login.login_required
+@admin_permission.require(http_exception=403)
 def getAllUsers():
     try:
         userDB = session.query(User).all()
