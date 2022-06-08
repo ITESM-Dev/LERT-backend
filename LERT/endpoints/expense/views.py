@@ -16,6 +16,7 @@ from LERT.endpoints.manager.models import Manager
 from LERT.endpoints.user.models import User
 from LERT.endpoints.hourType.models import HourType
 from LERT.endpoints.resourceExpense.models import ResourceExpense
+from LERT.endpoints.authorization.roles import manager_or_IcaAdmin
 import datetime
 import requests
 
@@ -26,6 +27,7 @@ session = Session(connection.e)
 @expense.route("/createExpense", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
+@manager_or_IcaAdmin.require(http_exception=403)
 def createExpense():
     # TODO ExpenseType type es UNIQUE
     # TODO CurrentPeriod PK = quarter + year 
