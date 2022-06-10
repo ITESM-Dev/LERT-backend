@@ -20,51 +20,55 @@ import flask_login
 
 user = Blueprint('user', __name__)
 
-session = Session(connection.e)
-
 @user.route("/signUp", methods=['POST', 'GET'])
 def createUser():
-    ph = PasswordHasher()
-
-    statusCode = flask.Response(status=201)
-    userName = flask.request.json['name']
-    userMail = flask.request.json['mail']
-    userPassword = ph.hash(flask.request.json['password'])
-    userBand = int(flask.request.json['band'])
-    userRole = flask.request.json['role']
-    userCountry = flask.request.json['country']
     
     try:
+        session = connection.session
 
+        ph = PasswordHasher()
+
+        statusCode = flask.Response(status=201)
+        userName = flask.request.json['name']
+        userMail = flask.request.json['mail']
+        userPassword = ph.hash(flask.request.json['password'])
+        userBand = int(flask.request.json['band'])
+        userRole = flask.request.json['role']
+        userCountry = flask.request.json['country']
+        
         user1 = User(name = userName, mail = userMail, password = userPassword, band = userBand, role = userRole, country = userCountry)
         session.add(user1)
         session.commit() 
-        
+
+        userDB = session.query(User).filter_by(mail = userMail).first()
+
+        if (userRole == "Admin"):
+            admin = Administrator(idUser = userDB.idUser)
+            session.add(admin)
+            session.commit()
+        elif (userRole == "IcaAdmin"):
+            icaAdmin = ICAAdmin(idUser = userDB.idUser)
+            session.add(icaAdmin)
+            session.commit()
+        elif (userRole == "OpManager"):
+            opManager = OpManager(idUser = userDB.idUser, status = "Active")
+            session.add(opManager)
+            session.commit()
+        elif (userRole == "Manager"):    
+            manager = Manager(idUser = userDB.idUser, recoveryStatus = "Not completed", status = "Active", lastUpdated = date.today())
+            session.add(manager)
+            session.commit()
+        else:
+            resource = Resource(idUser = userDB.idUser)
+            session.add(resource)
+            session.commit()
+
+        session.close()
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
     except Exception as e:
         print(e)
-
-    userDB = session.query(User).filter_by(mail = userMail).first()
-
-    if (userRole == "Admin"):
-        admin = Administrator(idUser = userDB.idUser)
-        session.add(admin)
-        session.commit()
-    elif (userRole == "IcaAdmin"):
-        icaAdmin = ICAAdmin(idUser = userDB.idUser)
-        session.add(icaAdmin)
-        session.commit()
-    elif (userRole == "OpManager"):
-        opManager = OpManager(idUser = userDB.idUser, status = "Active")
-        session.add(opManager)
-        session.commit()
-    elif (userRole == "Manager"):    
-        manager = Manager(idUser = userDB.idUser, recoveryStatus = "Not completed", status = "Active", lastUpdated = date.today())
-        session.add(manager)
-        session.commit()
-    else:
-        resource = Resource(idUser = userDB.idUser)
-        session.add(resource)
-        session.commit()
 
     return statusCode
 
@@ -73,6 +77,8 @@ def createUser():
 @flask_login.login_required
 def getUserInfo():
     try:
+        session = Session(connection.e)
+
         userMail = flask.request.headers['mail']
         userDB = session.query(User).filter_by(mail = userMail).first()
 
@@ -83,21 +89,28 @@ def getUserInfo():
             "band": userDB.band,
             "role": userDB.role,
             "country": userDB.country
-        }
+        }  
 
-        return result
-        
+        session.close()
+
     except requests.exceptions.RequestException as e:  # This is the correct syntax
+
         raise SystemExit(e)        
     except Exception as e:
         print(e)
+
+    return result
+
 
 @user.route("/getAllUsers", methods=['GET'])
 @cross_origin()
 @flask_login.login_required
 @admin_permission.require(http_exception=403)
 def getAllUsers():
+
     try:
+        session = connection.session
+
         userDB = session.query(User).all()
 
         users = []
@@ -110,12 +123,12 @@ def getAllUsers():
 
             users.append(currentUser)
 
-
-        return jsonify(users), 200
+        session.close()    
         
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
+    
+    return jsonify(users), 200
 
-session.close()

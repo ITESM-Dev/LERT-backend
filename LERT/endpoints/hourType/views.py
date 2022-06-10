@@ -13,8 +13,6 @@ import datetime
 
 hourType = Blueprint('hourType', __name__)
 
-session = Session(connection.e)
-
 @hourType.route("/createHourType", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
@@ -29,18 +27,12 @@ def createHourType():
     dateToFinishReq = flask.request.json['dateToFinish']
     
     try:
+        session = Session(connection.e)
         
         bandTypeDB = session.query(BandType).filter_by(band = bandReqName, country = countryReq).first()
         bandTypeIDdb = bandTypeDB.idBandType
         
         session.commit() 
-        
-    except requests.exceptions.RequestException as e:  # This is the correct syntax
-        raise SystemExit(e)        
-    except Exception as e:
-        print(e)
-
-    try:
 
         y, m, d = dateToStartReq.split('-')
         startDateReq = datetime.datetime(int(y), int(m), int(d))
@@ -55,6 +47,8 @@ def createHourType():
         # TODO calculate hourType rate based on bandType yearly rate, country and # of extra hours worked
         session.add(hourType1)
         session.commit() 
+
+        session.close()
         
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)    
@@ -64,5 +58,3 @@ def createHourType():
     id = {"id": hourType1.idHourType }
     
     return id, 201 
-
-session.close()

@@ -22,8 +22,6 @@ import requests
 
 expense = Blueprint('expense', __name__)
 
-session = Session(connection.e)
-
 @expense.route("/createExpense", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
@@ -34,6 +32,8 @@ def createExpense():
     # TODO tipo de dato de date -> Date !String
             
     try:
+        session = Session(connection.e)
+
         mailReq = flask.request.json['mailResource']
         costReq = int(flask.request.json['cost'])
         dateReq = flask.request.json['date']
@@ -57,11 +57,6 @@ def createExpense():
         
         currentPeriodQuery = session.query(CurrentPeriod).filter_by(key = keyCurrentPeriodReq)
         currentPeriodID = currentPeriodQuery.first().idCurrentPeriod
-            
-    except Exception as e:
-        print(e)
-
-    try:
         
         expense1 = Expense(idManager = managerID, idExpenseType = expenseTypeID, 
         idCurrentPeriod =  currentPeriodID ,cost = costReq, date = dateFormat, comment = commentReq)
@@ -85,7 +80,9 @@ def createExpense():
 
         association_expense_resource = association_table_Expense_Resource.insert().values(idExpense = expense1.idExpense, idResource = resourceID)
         session.execute(association_expense_resource) 
-        session.commit()        
+        session.commit()     
+
+        session.close()   
         
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -95,6 +92,3 @@ def createExpense():
     id = {"id": expense1.idExpense }
     
     return id, 201 
-
-
-session.close()

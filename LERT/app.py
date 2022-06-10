@@ -23,6 +23,7 @@ import secrets
 import time
 from flask import Flask
 import flask
+import requests
 from sqlalchemy.orm import Session
 from sqlalchemy import *
 import sys
@@ -77,29 +78,36 @@ VIDA_TOKEN = 1000 * 60 * 3
 
 @login_manager.user_loader
 def load_user(idUser):  
-    session2 = Session(connection.e)
-    user = session2.query(User).get(idUser)
+    session = Session(connection.e)
+
+    user = session.query(User).get(idUser)
 
     if user == None:
         return "User not found", 401
-    session2.close()
+   
+    session.close()
+   
     return user
 
 @login_manager.request_loader
 def request_loader(request):
-    session2 = Session(connection.e)
+    
     ph = PasswordHasher()
 
     try:
+        
         userToken = request.headers.get('token')
         userMail = request.headers.get('mail')
+  
     except Exception as e:
         return "No credentials", 401
 
     try:
-        userDBQuery = session2.query(User).filter_by(mail = userMail)
+        session = connection.session
+        userDBQuery = session.query(User).filter_by(mail = userMail)
         userDB = userDBQuery.first()
         userMail = userDB.mail
+        session.close()
     except Exception as e:
         return "Email is not valid", 401 
 
@@ -107,6 +115,7 @@ def request_loader(request):
     tokenDB = userDB.token
     
     try:
+        
         ph.verify(tokenDB, userToken)
 
     except:
@@ -118,6 +127,9 @@ def request_loader(request):
     if(userDB.expiration + VIDA_TOKEN < currentTimestamp):
         return 
 
+
+    session = connection.session
+
     userDBQuery.\
         update({User.expiration: currentTimestamp}, synchronize_session='fetch')
 
@@ -127,15 +139,18 @@ def request_loader(request):
     result.role = userRole
 
     identity_changed.send(current_app._get_current_object(), identity=Identity(userDB.idUser))
-    session2.close()
+    
+    session.close()
+
     return result
 
 @identity_loaded.connect_via(app)
 def on_identity_loaded(sender, identity):
-    session2 = Session(connection.e)
 
     try:
-        userDBQuery = session2.query(User).filter_by(idUser = identity.id).first()
+        session = connection.session
+
+        userDBQuery = session.query(User).filter_by(idUser = identity.id).first()
 
         # Add the UserNeed to the identity
         if hasattr(identity, 'id'):
@@ -145,7 +160,11 @@ def on_identity_loaded(sender, identity):
         # identity with the roles that the user provides
         
         identity.provides.add(RoleNeed(userDBQuery.role))
-        session2.close()
+
+        session.close()
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)  
     except Exception as e:
         return e
 
@@ -154,13 +173,13 @@ def on_identity_loaded(sender, identity):
 @cross_origin()
 def login():
 
-    session3 = Session(connection.e)
-    
     try:
+        session = connection.session
         userMail = flask.request.json['mail']
-        userDBQuery = session3.query(User).filter_by(mail = userMail)
+        userDBQuery = session.query(User).filter_by(mail = userMail)
         userDB = userDBQuery.first()
         userMail = userDB.mail
+        session.close()
     except Exception as e:
         return "Email is not valid", 401 
 
@@ -175,8 +194,8 @@ def login():
 
     token = secrets.token_urlsafe(32)
     expiration = time.time()
-
-
+    
+    session = connection.session
 
     userDBQuery.\
         update({User.token: ph.hash(token)}, synchronize_session='fetch')
@@ -184,9 +203,7 @@ def login():
     userDBQuery.\
         update({User.expiration: expiration}, synchronize_session='fetch')
 
-    session3.commit()  
-
-    print(userDB.mail, file=sys.stderr)
+    session.commit()  
 
     result = {
         "id": userDB.idUser,
@@ -197,7 +214,7 @@ def login():
         "country": userDB.country,
         "token": token
     }
-    session3.close()
+    session.close()
     return result, 200
 
 @app.errorhandler(403)
@@ -213,11 +230,14 @@ def handler():
 @cross_origin() 
 @login_required
 def logout():
-    session2 = Session(connection.e)
-    userDBQuery = session2.query(User).filter_by(mail = flask_login.current_user.id)
+    session = connection.session
+
+    userDBQuery = session.query(User).filter_by(mail = flask_login.current_user.id)
     userDBQuery.\
         update({User.expiration: 0}, synchronize_session='fetch')
-    session2.close()
+
+    session.close()
+
     return "Logged Out", 200
 
 
@@ -225,22 +245,30 @@ def logout():
 @cross_origin()
 @icaAdmin_permission.require(http_exception=403)
 def loginICAAdmin():
-    session3 = Session(connection.e)
+
     try:
+        session = connection.session
+
         userMail = flask.request.json['mailManager']
         userToken = flask.request.json['token']
 
-        userDBQuery = session3.query(User).filter_by(mail = userMail)
+        userDBQuery = session.query(User).filter_by(mail = userMail)
         userDB = userDBQuery.first()
         userMail = userDB.mail
+
+        session.close()
+
     except Exception as e:
         return "Email is not valid", 401 
 
     try:
+        session = connection.session
+
         userToken = flask.request.json['token']
-        managerDB = session3.query(Manager).filter_by(idUser = userDB.idUser).first()
-        print(managerDB.idUser, file=sys.stderr)
+        managerDB = session.query(Manager).filter_by(idUser = userDB.idUser).first()
         tokenDB = managerDB.tokenAuthenticator
+
+        session.close()
 
         if tokenDB != userToken:
             return "Token is not valid", 401
@@ -253,13 +281,15 @@ def loginICAAdmin():
 
     ph = PasswordHasher()
 
+    session = connection.session
+
     userDBQuery.\
         update({User.token: ph.hash(token)}, synchronize_session='fetch')
     
     userDBQuery.\
         update({User.expiration: expiration}, synchronize_session='fetch')
 
-    session3.commit()  
+    session.commit()  
 
     result = {
         "id": userDB.idUser,
@@ -272,8 +302,9 @@ def loginICAAdmin():
     }
 
     managerDB.tokenAuthenticator = None
-    session3.commit()
-    session3.close()
+    session.commit()
+    session.close()
+    
     return result, 200
 
 

@@ -10,7 +10,7 @@ if os.getenv('ENVIRONMENT') == 'dev':
 elif os.getenv('ENVIRONMENT') == 'prod':
     port = int(os.getenv('PORT', 8000))
     bind = f":{port}"
-    timeout = 1000
+    timeout = 3000
     loglevel= 'debug'
-    workers = 2
+    workers = 1
     reload = False

@@ -14,8 +14,6 @@ from LERT.endpoints.authorization.roles import opManager_permission
 
 ica = Blueprint('ica', __name__)
 
-session = Session(connection.e)
-
 @ica.route("/createIca", methods = ['POST'])
 @cross_origin()
 @flask_login.login_required
@@ -50,6 +48,8 @@ def createICA():
     totalBillingReq = 0
     
     try:
+        session = Session(connection.e)
+
         y, m, d = startDateReq.split('-')
         startDateReq = datetime.datetime(int(y), int(m), int(d))
 
@@ -94,6 +94,7 @@ def createICA():
             update({Manager.idICA: ica1.idICA})
 
         session.commit() 
+        session.close()
         
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -104,5 +105,3 @@ def createICA():
     id = {"id": ica1.idICA}
     
     return id, 201 
-
-session.close()

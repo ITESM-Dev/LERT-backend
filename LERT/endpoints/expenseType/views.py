@@ -10,8 +10,6 @@ from LERT.endpoints.authorization.roles import manager_or_OpManager_or_icaAdmin,
 
 expenseType = Blueprint('expenseType', __name__)
 
-session = Session(connection.e)
-
 @expenseType.route("/createExpenseType", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
@@ -21,10 +19,14 @@ def createExpenseType():
     typeReq = flask.request.json['type']
 
     try:
+
+        session = Session(connection.e)
         
         expenseType1 = ExpenseType(type = typeReq)
         session.add(expenseType1)
         session.commit() 
+
+        session.close()
         
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -41,6 +43,8 @@ def createExpenseType():
 @manager_or_OpManager_or_icaAdmin.require(http_exception=403)
 def getExpenseType():
     try:
+        session = Session(connection.e)
+
         expenseTypes = session.query(ExpenseType).all()
 
         resultTypes = []
@@ -54,6 +58,8 @@ def getExpenseType():
 
             resultTypes.append(currentManager)
 
+        session.close()
+
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
@@ -66,6 +72,7 @@ def getExpenseType():
 @opManager_permission.require(http_exception=403)
 def updateExpenseType():
     try:
+        session = Session(connection.e)
 
         idExpenseTypeReq = flask.request.json['id']
         expenseTypeReq = flask.request.json['type']
@@ -76,6 +83,8 @@ def updateExpenseType():
         update({ExpenseType.type: expenseTypeReq}, synchronize_session='fetch')
 
         session.commit()
+
+        session.close()
         
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -90,11 +99,15 @@ def updateExpenseType():
 @opManager_permission.require(http_exception=403)
 def deleteExpenseType():
     try:
+        session = Session(connection.e)
+
         idExpenseTypeReq = flask.request.json['id']
 
         expenseTypeQuery = session.query(ExpenseType).filter_by(idExpenseType = idExpenseTypeReq).first()
         session.delete(expenseTypeQuery)
         session.commit()
+
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -102,5 +115,3 @@ def deleteExpenseType():
         print(e)
 
     return "Expense Type Deleted" ,200
-
-session.close()

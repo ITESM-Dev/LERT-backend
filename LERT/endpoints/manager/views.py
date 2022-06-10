@@ -28,14 +28,14 @@ import requests
 
 manager = Blueprint('manager', __name__)
 
-session = Session(connection.e)
-
 @manager.route("/setOpManager", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
 @opManager_permission.require(http_exception=403)
 def setOpManager():
     try:
+        session = Session(connection.e)
+
         managerMail = flask.request.json['managerMail']
         opManagerMail = flask_login.current_user.id
 
@@ -52,6 +52,8 @@ def setOpManager():
             update({Manager.idOPManager: opManagerID})
 
         session.commit()
+        session.close()
+
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
@@ -65,6 +67,8 @@ def setOpManager():
 @manager_or_OpManager.require(http_exception=403)
 def setIcaAdmin():
     try:
+        session = Session(connection.e)
+
         icaAdminMail = flask.request.json['icaAdminMail']
         managerMail = flask_login.current_user.id
 
@@ -76,6 +80,8 @@ def setIcaAdmin():
             filter_by(idUser = managerId).\
             update({Manager.idICA_Admin: icaAdminId})
         session.commit()
+        session.close()
+
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
@@ -89,6 +95,8 @@ def setIcaAdmin():
 @manager_permission.require(http_exception=403)
 def assignResourceToManager():
     try:
+        session = Session(connection.e)
+
         managerMailReq = flask.request.json['managerMail']
         resourceMailReq = flask.request.json['resourceMail']
         bandReq = int(flask.request.json['band'])
@@ -110,6 +118,7 @@ def assignResourceToManager():
             update({User.band: bandReq})
 
         session.commit()
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -124,6 +133,8 @@ def assignResourceToManager():
 @manager_permission.require(http_exception=403)
 def getManagerICA():
     try:
+        session = Session(connection.e)
+
         managerMail = flask_login.current_user.id
         managerUserID = session.query(User).filter_by(mail = managerMail).first().idUser
         managerIDICA = session.query(Manager).filter_by(idUser = managerUserID).first().idICA
@@ -133,6 +144,8 @@ def getManagerICA():
             "idICA" : managerIDICA,
             "icaCode": managerICACode
         }
+
+        session.close()
      
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -147,6 +160,8 @@ def getManagerICA():
 @manager_permission.require(http_exception=403)
 def getAvailableResources():
     try:
+        session = Session(connection.e)
+
         managerMail = flask_login.current_user.id
         managerUserID = session.query(User).filter_by(mail = managerMail).first().idUser
         managerID = session.query(Manager).filter_by(idUser = managerUserID).first().idManager
@@ -172,6 +187,8 @@ def getAvailableResources():
 
             resultResources.append(currentResource)
 
+        session.close()
+
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
@@ -185,6 +202,8 @@ def getAvailableResources():
 @manager_permission.require(http_exception=403)
 def getResources():
     try:
+        session = Session(connection.e)
+
         managerMail = flask_login.current_user.id
         managerUserID = session.query(User).filter_by(mail = managerMail).first().idUser
         managerID = session.query(Manager).filter_by(idUser = managerUserID).first().idManager
@@ -215,6 +234,8 @@ def getResources():
             }
 
             resultResources.append(currentResource)
+        
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -229,56 +250,65 @@ def getResources():
 @manager_or_IcaAdmin.require(http_exception=403)
 def getExpenses():
 
-    result_expenses = []
-    managerMail = flask_login.current_user.id
-    managerUserID = session.query(User).filter_by(mail = managerMail).first().idUser
+    try:
+        session = Session(connection.e)
 
-    queryManager = session.query(Manager).filter_by(idUser = managerUserID).first()
-    managerId = queryManager.idManager
-    managerIdICA = queryManager.idICA
-    managerIdICAAdmin = queryManager.idICA_Admin
-    managerIdOPManager = queryManager.idOPManager
-    
-    expenses = session.query(Expense).filter_by(idManager = managerId).all()
+        result_expenses = []
+        managerMail = flask_login.current_user.id
+        managerUserID = session.query(User).filter_by(mail = managerMail).first().idUser
 
-
-    for expense in expenses:
-
-        expenseType = session.query(ExpenseType).filter_by(idExpenseType = expense.idExpenseType).first().type
+        queryManager = session.query(Manager).filter_by(idUser = managerUserID).first()
+        managerId = queryManager.idManager
+        managerIdICA = queryManager.idICA
+        managerIdICAAdmin = queryManager.idICA_Admin
+        managerIdOPManager = queryManager.idOPManager
         
-        if expenseType == "Double" or expenseType == "Triple" or expenseType == "Salary":
-            idSerial_ = session.query(association_table_Expense_Resource).filter(association_table_Expense_Resource.c.idExpense == expense.idExpense).first().idResource
-            idUser_ = session.query(Resource).filter_by(idSerial = idSerial_).first().idSerial
-            user_table = session.query(User).filter_by(idUser = idUser_).first()
-            user_id = user_table.idUser
-            user_mail = user_table.mail
-        else:
-            user_id = ""
-            user_mail = ""
-        idUserICAAdmin = session.query(ICAAdmin).filter_by(idICA_Admin = managerIdICAAdmin).first()
-        if(idUserICAAdmin == None):
-            mailICAAdmin = None
-        else:
-            mailICAAdmin = session.query(User).filter_by(idUser = idUserICAAdmin.idUser).first().mail
-        idUserOpManager = session.query(OpManager).filter_by(idOPManager = managerIdOPManager).first().idUser
-        mailOPManager = session.query(User).filter_by(idUser = idUserOpManager).first().mail
-        
-        
-        current = {
-            'id_expense': expense.idExpense,
-            "type": expenseType,
-            "cost": expense.cost,
-            "date": str(expense.date),
-            "comment": expense.comment,
-            "idICA": managerIdICA,
-            "idEmployee": user_id,
-            "employeeMail": user_mail,
-            "idICAManager": managerIdICAAdmin,
-            "ICAManager": mailICAAdmin,
-            "idAdministrator": managerIdOPManager,
-            "administrator": mailOPManager
-        }
-        result_expenses.append(current)
+        expenses = session.query(Expense).filter_by(idManager = managerId).all()
+
+
+        for expense in expenses:
+
+            expenseType = session.query(ExpenseType).filter_by(idExpenseType = expense.idExpenseType).first().type
+            
+            if expenseType == "Double" or expenseType == "Triple" or expenseType == "Salary":
+                idSerial_ = session.query(association_table_Expense_Resource).filter(association_table_Expense_Resource.c.idExpense == expense.idExpense).first().idResource
+                idUser_ = session.query(Resource).filter_by(idSerial = idSerial_).first().idSerial
+                user_table = session.query(User).filter_by(idUser = idUser_).first()
+                user_id = user_table.idUser
+                user_mail = user_table.mail
+            else:
+                user_id = ""
+                user_mail = ""
+            idUserICAAdmin = session.query(ICAAdmin).filter_by(idICA_Admin = managerIdICAAdmin).first()
+            if(idUserICAAdmin == None):
+                mailICAAdmin = None
+            else:
+                mailICAAdmin = session.query(User).filter_by(idUser = idUserICAAdmin.idUser).first().mail
+            idUserOpManager = session.query(OpManager).filter_by(idOPManager = managerIdOPManager).first().idUser
+            mailOPManager = session.query(User).filter_by(idUser = idUserOpManager).first().mail
+            
+            
+            current = {
+                'id_expense': expense.idExpense,
+                "type": expenseType,
+                "cost": expense.cost,
+                "date": str(expense.date),
+                "comment": expense.comment,
+                "idICA": managerIdICA,
+                "idEmployee": user_id,
+                "employeeMail": user_mail,
+                "idICAManager": managerIdICAAdmin,
+                "ICAManager": mailICAAdmin,
+                "idAdministrator": managerIdOPManager,
+                "administrator": mailOPManager
+            }
+            result_expenses.append(current)
+        session.close()
+
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)        
+    except Exception as e:
+        print(e)
         
     return jsonify(result_expenses), 200
 
@@ -288,6 +318,8 @@ def getExpenses():
 @manager_or_IcaAdmin.require(http_exception=403)
 def updateExpenses():
     try:
+        session = Session(connection.e)
+
         expenseIDReq = int(flask.request.json['id'])
         expenseCostReq = int(flask.request.json['cost'])
         expenseDateReq_unparsed = flask.request.json['date']
@@ -301,6 +333,7 @@ def updateExpenses():
                 update({Expense.cost: expenseCostReq, Expense.date: expenseDateReq, Expense.comment:expenseCommentReq})
 
         session.commit()
+        session.close()
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)
     except Exception as e:
@@ -313,6 +346,7 @@ def updateExpenses():
 @manager_or_IcaAdmin.require(http_exception=403)
 def deleteExpenses():
     try:
+        session = Session(connection.e)
 
         expenseIDReq = int(flask.request.json['id'])
         expenseDB = session.query(Expense).filter_by(idExpense = expenseIDReq).first()
@@ -325,6 +359,7 @@ def deleteExpenses():
         resource_expense = session.query(association_table_Expense_Resource).filter(association_table_Expense_Resource.c.idExpense == expenseDB.idExpense).first()
         session.delete(expenseDB)
         session.commit()
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)
@@ -340,6 +375,7 @@ def deleteExpenses():
 def expensesForQuarter():
     
     try: 
+        session = Session(connection.e)
 
         expenseYearReq = int(flask.request.json['year'])
         managerMail = flask_login.current_user.id
@@ -381,6 +417,8 @@ def expensesForQuarter():
             "4": fourth_quarter,
         }
 
+        session.close()
+
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)
     except Exception as e:
@@ -394,6 +432,8 @@ def expensesForQuarter():
 @manager_or_IcaAdmin.require(http_exception=403)
 def reportExpense():
     try: 
+        session = Session(connection.e)
+
         report = []
         startDate = flask.request.json['startDate']
         endDate = flask.request.json['endDate']
@@ -474,6 +514,8 @@ def reportExpense():
             csv_writer.writerow(emp.values())
     
         data_file.close()
+        session.close()
+
     except requests.exceptions.RequestException as e:  
         raise SystemExit(e)
     except Exception as e:
@@ -491,6 +533,8 @@ def reportExpense():
 def getAvailableDelegates():
     
     try:
+        session = Session(connection.e)
+
         managerMail = flask_login.current_user.id
         managerUserID = session.query(User).filter_by(mail = managerMail).first().idUser
         managerQuery = session.query(Manager).filter_by(idUser = managerUserID).first()
@@ -510,6 +554,8 @@ def getAvailableDelegates():
             }
 
             availableDelegates.append(delegate)
+        
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)
@@ -524,6 +570,8 @@ def getAvailableDelegates():
 @manager_permission.require(http_exception=403)
 def getICAAdminManager():
     try:
+        session = Session(connection.e)
+
         managerMail = flask_login.current_user.id
         managerUserID = session.query(User).filter_by(mail = managerMail).first().idUser
         
@@ -543,6 +591,8 @@ def getICAAdminManager():
                 "idICA_Admin" : icaAdminIDUser,
                 "icaMail" : icaAdminMail 
             }
+        
+        session.close()
      
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -557,6 +607,7 @@ def getICAAdminManager():
 @manager_or_OpManager.require(http_exception=403)
 def deleteIcaAdminFromManager():
     try:
+        session = Session(connection.e)
         
         icaAdminMailReq = flask.request.json['icaAdminMail']
         
@@ -574,6 +625,7 @@ def deleteIcaAdminFromManager():
             })
 
         session.commit()
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -581,6 +633,3 @@ def deleteIcaAdminFromManager():
         print(e) 
 
     return "Ica Admin unassigned", 200
-
-
-session.close()

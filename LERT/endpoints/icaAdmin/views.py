@@ -15,14 +15,14 @@ from LERT.endpoints.authorization.roles import icaAdmin_permission
 
 icaAdmin = Blueprint('icaAdmin', __name__)
 
-session = Session(connection.e)
-
 @icaAdmin.route("/getManagersIcaAdmin", methods=['GET'])
 @cross_origin()
 @flask_login.login_required
 @icaAdmin_permission.require(http_exception=403)
 def getManagersIcaAdmin():
     try:
+        session = Session(connection.e)
+
         icaAdminMail = flask_login.current_user.id
 
         icaAdminUser = session.query(User).filter_by(mail = icaAdminMail).first().idUser
@@ -37,6 +37,7 @@ def getManagersIcaAdmin():
                 "mail": managerUser.mail
             }
             managers.append(currentmanager)
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -51,6 +52,8 @@ def getManagersIcaAdmin():
 @icaAdmin_permission.require(http_exception=403)
 def assignTokenAuthenticator():
     try:
+        session = Session(connection.e)
+
         userMail = flask.request.json['managerMail']
         temporal_token = secrets.token_urlsafe(32)
 
@@ -62,11 +65,12 @@ def assignTokenAuthenticator():
             {Manager.tokenAuthenticator : temporal_token}
         )
         session.commit()
+
+        session.close()
+
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e) 
 
     return temporal_token, 200
-    
-session.close()

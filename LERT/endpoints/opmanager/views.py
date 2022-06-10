@@ -22,14 +22,14 @@ import datetime
 
 opManager = Blueprint('opManager', __name__)
 
-session = Session(connection.e)
-
 @opManager.route("/getBandTypes", methods=['GET'])
 @cross_origin()
 @flask_login.login_required
 @manager_or_OpManager_or_icaAdmin.require(http_exception=403)
 def getBandTypes():
     try:
+        session = Session(connection.e)
+
         bandTypesDB = session.query(BandType).all()
         bandTypes = []
         for band in bandTypesDB:
@@ -44,12 +44,15 @@ def getBandTypes():
             }
             bandTypes.append(currentBand)
 
-        return jsonify(bandTypes)
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
+    
+    return jsonify(bandTypes)
+    
 
 @opManager.route("/updateBandType", methods=['POST'])
 @cross_origin()
@@ -57,6 +60,8 @@ def getBandTypes():
 @opManager_permission.require(http_exception=403)
 def updateBandTypes():
     try:
+        session = Session(connection.e)
+
         bandTypeIdReq = int(flask.request.json['id'])
         typeReq = flask.request.json['type']
         bandReq = flask.request.json['band']
@@ -77,6 +82,7 @@ def updateBandTypes():
             BandType.yearlyRate:yearlyRateReq, BandType.dateToStart: startDateReq, BandType.dateToFinish: endDateReq})
 
         session.commit()
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -91,6 +97,7 @@ def updateBandTypes():
 @opManager_permission.require(http_exception=403)
 def deleteBandTypes():
     try:
+        session = Session(connection.e)
 
         bandTypeIDReq = int(flask.request.json['id'])
         bandTypeDB = session.query(BandType).filter_by(idBandType = bandTypeIDReq).first()
@@ -104,6 +111,7 @@ def deleteBandTypes():
         session.delete(bandTypeDB)
         session.delete(hourType)
         session.commit()
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -118,6 +126,8 @@ def deleteBandTypes():
 @manager_or_OpManager_or_icaAdmin.require(http_exception=403)
 def getHourTypes():
     try:
+        session = Session(connection.e)
+
         hourTypesDB = session.query(HourType).all()
         hourTypes = []
         for hourType in hourTypesDB:
@@ -131,6 +141,9 @@ def getHourTypes():
                 "dateToFinish": str(hourType.dateToFinish)
             }
             hourTypes.append(currentHourType)
+
+        session.close()
+
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
@@ -144,6 +157,8 @@ def getHourTypes():
 @opManager_permission.require(http_exception=403)
 def getManagers():
     try:
+        session = Session(connection.e)
+
         opManagerMail = flask_login.current_user.id
         opManagerUserID =  session.query(User).filter_by(mail = opManagerMail).first().idUser
         opManagerID = session.query(OpManager).filter_by(idUser = opManagerUserID).first().idOPManager
@@ -165,10 +180,13 @@ def getManagers():
 
             resultManagers.append(currentManager)
 
+        session.close()
+
     except requests.exceptions.RequestException as e: 
         raise SystemExit(e)        
     except Exception as e:
         print(e)
+
     return jsonify(resultManagers), 200    
 
 @opManager.route("/updateManager", methods=['PATCH'])
@@ -177,6 +195,8 @@ def getManagers():
 @opManager_permission.require(http_exception=403)
 def updateManager():
     try:
+        session = Session(connection.e)
+
         statusCode = flask.Response(status=201)
         managerMailReq = flask.request.json['mail']
         managerStatusReq = flask.request.json['status']
@@ -194,11 +214,13 @@ def updateManager():
                 update({Manager.status: managerStatusReq}, synchronize_session='fetch')
 
             session.commit()  
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
+
     return statusCode  
     
 @opManager.route("/updateHourType", methods=['POST'])
@@ -207,6 +229,8 @@ def updateManager():
 @opManager_permission.require(http_exception=403)
 def updateHourType():
     try:
+        session = Session(connection.e)
+
         hourTypeIdReq = int(flask.request.json['id'])
         typeReq = flask.request.json['type']
         bandReq = flask.request.json['band']
@@ -227,6 +251,7 @@ def updateHourType():
             HourType.rate:rateReq, HourType.dateToStart: startDateReq, HourType.dateToFinish: endDateReq})
 
         session.commit()
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -241,10 +266,14 @@ def updateHourType():
 @opManager_permission.require(http_exception=403)
 def deleteHourType():
     try:
+        session = Session(connection.e)
+
         hourTypeIdReq = int(flask.request.json['id'])
         hourTypeDB = session.query(HourType).filter_by(idHourType = hourTypeIdReq).first()
+        
         session.delete(hourTypeDB)
         session.commit()
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -259,6 +288,8 @@ def deleteHourType():
 @manager_or_OpManager_or_icaAdmin.require(http_exception=403)
 def getCurrentPeriods():
     try:
+        session = Session(connection.e)
+
         currentPeriodsDB = session.query(CurrentPeriod).all()
         currentPeriods = []
         for currentPeriodDB in currentPeriodsDB:
@@ -271,12 +302,13 @@ def getCurrentPeriods():
             }
             currentPeriods.append(currentPeriod)
 
-        return jsonify(currentPeriods)
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
+    return jsonify(currentPeriods)
 
 @opManager.route("/updateCurrentPeriod", methods=['POST'])
 @cross_origin()
@@ -284,6 +316,8 @@ def getCurrentPeriods():
 @opManager_permission.require(http_exception=403)
 def updateCurrentPeriod():
     try:
+        session = Session(connection.e)
+
         currentPeriodIdReq = int(flask.request.json['id'])
         quarterReq = int(flask.request.json['quarter'])
         yearReq = int(flask.request.json['year'])
@@ -296,6 +330,7 @@ def updateCurrentPeriod():
             CurrentPeriod.key:keyReq, CurrentPeriod.status: statusReq})
 
         session.commit()
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -310,10 +345,14 @@ def updateCurrentPeriod():
 @opManager_permission.require(http_exception=403)
 def deleteCurrentPeriod():
     try:
+        session = Session(connection.e)
+
         currentPeriodIdReq = int(flask.request.json['id'])
         currentPeriodDB = session.query(CurrentPeriod).filter_by(idCurrentPeriod = currentPeriodIdReq).first()
+        
         session.delete(currentPeriodDB)
         session.commit()
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -328,6 +367,7 @@ def deleteCurrentPeriod():
 @manager_or_OpManager_or_icaAdmin.require(http_exception=403)
 def getIcas():
     try:
+        session = Session(connection.e)
         
         icasDB = session.query(ICA).all()
         icas = []
@@ -383,12 +423,14 @@ def getIcas():
 
             icas.append(currentIca)
 
-        return jsonify(icas)
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
+
+    return jsonify(icas)
 
 @opManager.route("/updateIca", methods=['POST'])
 @cross_origin()
@@ -396,6 +438,8 @@ def getIcas():
 @opManager_permission.require(http_exception=403)
 def updateIca():
     try:
+        session = Session(connection.e)
+
         idIcaReq = flask.request.json['id']
         icaCodeReq = flask.request.json['icaCode']
         icaCoreReq = flask.request.json['icaCore']
@@ -455,6 +499,7 @@ def updateIca():
             update({Manager.idICA: None})
 
         session.commit()
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -469,10 +514,14 @@ def updateIca():
 @opManager_permission.require(http_exception=403)
 def deleteIca():
     try:
+        session = Session(connection.e)
+
         icaIdReq = int(flask.request.json['id'])
         icaDB = session.query(ICA).filter_by(idICA = icaIdReq).first()
+        
         session.delete(icaDB)
         session.commit()
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -487,6 +536,8 @@ def deleteIca():
 @opManager_permission.require(http_exception=403)
 def getAvailableManagersICA():
     try:
+        session = Session(connection.e)
+
         managersDB = session.query(Manager).filter_by(idICA = None).all()
         
         managers = []
@@ -501,6 +552,8 @@ def getAvailableManagersICA():
             }
 
             managers.append(currentManager)
+       
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -515,6 +568,8 @@ def getAvailableManagersICA():
 @opManager_permission.require(http_exception=403)
 def getManagersNoOpManager():
     try:
+        session = Session(connection.e)
+
         managersDB = session.query(Manager).filter_by(idOPManager = None).all()
         
         managers = []
@@ -529,6 +584,8 @@ def getManagersNoOpManager():
             }
 
             managers.append(currentManager)
+        
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -543,6 +600,8 @@ def getManagersNoOpManager():
 @manager_or_OpManager.require(http_exception=403)
 def getManagersNoIcaAdmins():
     try:
+        session = Session(connection.e)
+
         managersDB = session.query(Manager).filter_by(idICA_Admin = None).all()
         
         managers = []
@@ -557,6 +616,7 @@ def getManagersNoIcaAdmins():
             }
 
             managers.append(currentManager)
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -571,6 +631,8 @@ def getManagersNoIcaAdmins():
 @opManager_permission.require(http_exception=403)
 def getManagerAndIcaAdmins():
     try:
+        session = Session(connection.e)
+
         managersDB = session.query(Manager).filter(Manager.idICA_Admin != None).all()
         
         managers = []
@@ -594,6 +656,8 @@ def getManagerAndIcaAdmins():
             }
 
             managers.append(currentManager)
+        
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -608,6 +672,8 @@ def getManagerAndIcaAdmins():
 @manager_or_OpManager.require(http_exception=403)
 def geICAAdmins():
     try:
+        session = Session(connection.e)
+
         icaAdminDB = session.query(ICAAdmin).all()
         
         icaAdmins = []
@@ -624,6 +690,8 @@ def geICAAdmins():
             }
 
             icaAdmins.append(currentIcaAdmin)
+        
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -638,6 +706,8 @@ def geICAAdmins():
 @opManager_permission.require(http_exception=403)
 def OpAssignIcaAdminManager():
     try:
+        session = Session(connection.e)
+
         icaAdminMailReq = flask.request.json['icaAdminMail']
         managerMailReq = flask.request.json['managerMail']
         
@@ -657,6 +727,7 @@ def OpAssignIcaAdminManager():
             })
 
         session.commit()
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -671,6 +742,7 @@ def OpAssignIcaAdminManager():
 @opManager_permission.require(http_exception=403)
 def deleteManagerFromOPManager():
     try:
+        session = Session(connection.e)
         
         managerMailReq = flask.request.json['managerMail']
         
@@ -687,6 +759,7 @@ def deleteManagerFromOPManager():
             })
 
         session.commit()
+        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -694,5 +767,3 @@ def deleteManagerFromOPManager():
         print(e) 
 
     return "Manager unassigned", 200
-
-session.close()

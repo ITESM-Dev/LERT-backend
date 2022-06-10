@@ -13,8 +13,6 @@ from LERT.endpoints.authorization.roles import opManager_permission
 
 bandType = Blueprint('bandType', __name__)
 
-session = Session(connection.e)
-
 @bandType.route("/createBandType", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
@@ -29,6 +27,7 @@ def createBandType():
     dateToFinishReq = flask.request.json['dateToFinish']
 
     try:
+        session = Session(connection.e)
 
         y, m, d = dateToStartReq.split('-')
         startDateReq = datetime.datetime(int(y), int(m), int(d))
@@ -39,6 +38,8 @@ def createBandType():
         bandType1 = BandType(type = typeReq, band = bandReq, yearlyRate = yearlyRateReq, country = countryReq, dateToStart = startDateReq, dateToFinish = endDateReq)
         session.add(bandType1)
         session.commit() 
+
+        session.close()
         
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)    
@@ -48,6 +49,4 @@ def createBandType():
     id = {"id": bandType1.idBandType }
     
     return id, 201
-
-session.close()
 

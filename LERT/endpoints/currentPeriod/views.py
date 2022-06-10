@@ -11,8 +11,6 @@ from LERT.endpoints.authorization.roles import opManager_permission
 
 currentPeriod = Blueprint('currentPeriod', __name__)
 
-session = Session(connection.e)
-
 @currentPeriod.route("/createCurrentPeriod", methods = ['POST'])
 @cross_origin()
 @flask_login.login_required
@@ -26,10 +24,14 @@ def createCurrentPeriod():
     statusReq = flask.request.json['status']
 
     try:
+
+        session = Session(connection.e)
         
         currentPeriod1 = CurrentPeriod(quarter = quarterReq, year = yearReq, key = keyReq, status = statusReq)
         session.add(currentPeriod1)
         session.commit() 
+
+        session.close()
         
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -40,5 +42,3 @@ def createCurrentPeriod():
     id = {"id": currentPeriod1.idCurrentPeriod }
     
     return id, 201 
-
-session.close()
