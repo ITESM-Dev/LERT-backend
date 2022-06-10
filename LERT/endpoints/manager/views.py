@@ -419,7 +419,7 @@ def expensesForQuarter():
     session.close()
     return quarters, 200
     
-@manager.route("/reportExpense", methods=['GET'])
+@manager.route("/reportExpense", methods=['POST'])
 @cross_origin()
 @flask_login.login_required
 @manager_or_IcaAdmin.require(http_exception=403)
