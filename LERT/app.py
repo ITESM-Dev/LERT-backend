@@ -240,7 +240,6 @@ def logout():
 
 @app.route('/loginICAAdmin', methods=['POST'])
 @cross_origin()
-@icaAdmin_permission.require(http_exception=403)
 def loginICAAdmin():
 
     try:
