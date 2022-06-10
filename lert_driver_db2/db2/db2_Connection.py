@@ -12,6 +12,7 @@ DB_PASSWORD = os.environ.get("DB2INST1_PASSWORD")
 SECURITY = os.environ.get("SECURITY")
 UID = os.environ.get("UID")
 CERTIFICATE = os.environ.get("CERTIFICATE")
+DB_PORT = os.environ.get("DB_PORT")
 
 
 def singleton(class_):
@@ -27,9 +28,9 @@ class Db2Connection(object):
     def __init__(self): 
         try:
             if os.environ.get('ENVIRONMENT') == "dev":
-                db_string = f"db2+ibm_db://{UID}:{DB_PASSWORD}@{DB_HOSTNAME}:{50000}/{DB_NAME}"
+                db_string = f"db2+ibm_db://{UID}:{DB_PASSWORD}@{DB_HOSTNAME}:{DB_PORT}/{DB_NAME}"
             elif os.environ.get('ENVIRONMENT') == "prod":
-                db_string = f"db2+ibm_db://{UID}:{DB_PASSWORD}@{DB_HOSTNAME}:{32733}/{DB_NAME};SECURITY=SSL;"
+                db_string = f"db2+ibm_db://{UID}:{DB_PASSWORD}@{DB_HOSTNAME}:{DB_PORT}/{DB_NAME};SECURITY=SSL;"
 
             engine_db = create_engine(db_string, pool_size=10, max_overflow=0)
             self.e = engine_db
