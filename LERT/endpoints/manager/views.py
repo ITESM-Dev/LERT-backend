@@ -481,7 +481,7 @@ def reportExpense():
                 'id_expense': expense.idExpense,
                 "type": expenseType,
                 "cost": expense.cost,
-                "date": expense.date,
+                "date": str(expense.date),
                 "comment": expense.comment,
                 "idICA": managerIdICA,
                 "idEmployee": user_id,
@@ -494,26 +494,9 @@ def reportExpense():
             result_expenses.append(current)
         
         for item in result_expenses:
-            if item["date"] >= (startDateReq.date()) and item["date"] <= (endDateReq).date():
+            if item["date"] >= str(startDateReq) and item["date"] <= str(endDateReq):
                 report.append(item)
 
-        import json
-        import csv
- 
- 
-        data_file = open('data_file.csv', 'w')
-        csv_writer = csv.writer(data_file)
-
-        count = 0
-        for emp in report:
-            if count == 0:
-                header = emp.keys()
-                csv_writer.writerow(header)
-                count += 1
-
-            csv_writer.writerow(emp.values())
-    
-        data_file.close()
         session.close()
 
     except requests.exceptions.RequestException as e:  
@@ -521,10 +504,7 @@ def reportExpense():
     except Exception as e:
         print(e) 
     
-    cwd = os.getcwd()
-    
-    #return "200"
-    return send_file(cwd+"/data_file.csv", attachment_filename="data_file.csv")
+    return jsonify(report), 200
 
 @manager.route("/getAvailableDelegates", methods=['GET'])
 @cross_origin()
