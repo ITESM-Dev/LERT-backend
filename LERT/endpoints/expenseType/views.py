@@ -25,8 +25,6 @@ def createExpenseType():
         expenseType1 = ExpenseType(type = typeReq)
         session.add(expenseType1)
         session.commit() 
-
-        session.close()
         
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -35,6 +33,7 @@ def createExpenseType():
         
     id = {"id": expenseType1.idExpenseType }
 
+    session.close()
     return id, 201 
 
 @expenseType.route("/getExpenseTypes", methods=['GET'])
@@ -58,12 +57,12 @@ def getExpenseType():
 
             resultTypes.append(currentManager)
 
-        session.close()
-
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
+
+    session.close()
     return jsonify(resultTypes), 200
 
 @expenseType.route("/updateExpenseType", methods=['POST'])
@@ -83,14 +82,13 @@ def updateExpenseType():
         update({ExpenseType.type: expenseTypeReq}, synchronize_session='fetch')
 
         session.commit()
-
-        session.close()
         
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
 
+    session.close()
     return "Expense Type updated" ,200
 
 @expenseType.route("/deleteExpenseType", methods=['POST'])
@@ -107,11 +105,10 @@ def deleteExpenseType():
         session.delete(expenseTypeQuery)
         session.commit()
 
-        session.close()
-
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
 
+    session.close()
     return "Expense Type Deleted" ,200

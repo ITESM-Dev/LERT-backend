@@ -18,7 +18,7 @@ hourType = Blueprint('hourType', __name__)
 @flask_login.login_required
 @opManager_permission.require(http_exception=403)
 def createHourType():
-    statusCode = flask.Response(status=201)
+ 
     typeReq = flask.request.json['type']
     bandReqName = flask.request.json['band'] 
     rateReq = int(flask.request.json['rate'])
@@ -47,8 +47,6 @@ def createHourType():
         # TODO calculate hourType rate based on bandType yearly rate, country and # of extra hours worked
         session.add(hourType1)
         session.commit() 
-
-        session.close()
         
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)    
@@ -57,4 +55,5 @@ def createHourType():
 
     id = {"id": hourType1.idHourType }
     
+    session.close()
     return id, 201 

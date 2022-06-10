@@ -1,9 +1,6 @@
-from crypt import methods
 from flask import Blueprint, jsonify
-from flask_login import login_required
 from datetime import date
 from LERT.endpoints.authorization.roles import admin_permission
-#from LERT.db.session import session
 from LERT.db.database import connection
 from sqlalchemy.orm import Session
 from LERT.endpoints.user.models import User
@@ -63,13 +60,12 @@ def createUser():
             session.add(resource)
             session.commit()
 
-        session.close()
-
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
 
+    session.close()
     return statusCode
 
 @user.route("/getUserInfo", methods=['GET'])
@@ -91,14 +87,13 @@ def getUserInfo():
             "country": userDB.country
         }  
 
-        session.close()
-
     except requests.exceptions.RequestException as e:  # This is the correct syntax
 
         raise SystemExit(e)        
     except Exception as e:
         print(e)
 
+    session.close()
     return result
 
 
@@ -122,13 +117,12 @@ def getAllUsers():
             }
 
             users.append(currentUser)
-
-        session.close()    
         
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
     
+    session.close()
     return jsonify(users), 200
 

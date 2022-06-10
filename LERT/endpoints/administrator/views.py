@@ -28,13 +28,13 @@ def getUserInfo():
         update({User.role: roleReq}, synchronize_session='fetch')
 
         session.commit()
-        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
 
+    session.close()
     return "User role updated", 200
 
 @admin.route("/deleteUserRoles", methods=['POST'])
@@ -52,11 +52,11 @@ def deleteUserRoles():
         update({User.role: "Resource"}, synchronize_session='fetch')
 
         session.commit()
-        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
 
+    session.close()
     return "User role Deleted", 200

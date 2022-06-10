@@ -16,8 +16,6 @@ from LERT.endpoints.expense.views import expense
 from LERT.endpoints.resourceExpense.views import resourceExpense
 from LERT.endpoints.currentPeriod.views import currentPeriod
 from LERT.db.database import connection
-import LERT.db.dbCreation
-from crypt import methods
 import os
 import secrets
 import time
@@ -26,7 +24,6 @@ import flask
 import requests
 from sqlalchemy.orm import Session
 from sqlalchemy import *
-import sys
 from flask_cors import CORS, cross_origin
 from argon2 import PasswordHasher
 from flask_principal import *
@@ -86,7 +83,6 @@ def load_user(idUser):
         return "User not found", 401
    
     session.close()
-   
     return user
 
 @login_manager.request_loader
@@ -108,6 +104,7 @@ def request_loader(request):
         userDB = userDBQuery.first()
         userMail = userDB.mail
         session.close()
+        
     except Exception as e:
         return "Email is not valid", 401 
 

@@ -30,8 +30,6 @@ def createCurrentPeriod():
         currentPeriod1 = CurrentPeriod(quarter = quarterReq, year = yearReq, key = keyReq, status = statusReq)
         session.add(currentPeriod1)
         session.commit() 
-
-        session.close()
         
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -40,5 +38,6 @@ def createCurrentPeriod():
 
 
     id = {"id": currentPeriod1.idCurrentPeriod }
-    
+
+    session.close()    
     return id, 201 

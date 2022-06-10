@@ -38,8 +38,6 @@ def createBandType():
         bandType1 = BandType(type = typeReq, band = bandReq, yearlyRate = yearlyRateReq, country = countryReq, dateToStart = startDateReq, dateToFinish = endDateReq)
         session.add(bandType1)
         session.commit() 
-
-        session.close()
         
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)    
@@ -47,6 +45,7 @@ def createBandType():
         print(e)
 
     id = {"id": bandType1.idBandType }
-    
+
+    session.close()    
     return id, 201
 

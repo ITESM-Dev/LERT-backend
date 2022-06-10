@@ -1,7 +1,4 @@
-from crypt import methods
 import datetime
-import os
-import csv
 from sys import stderr
 from flask import Blueprint, jsonify, send_file
 import flask
@@ -23,7 +20,6 @@ from LERT.endpoints.expense.models import association_table_Expense_Resource
 from LERT.endpoints.manager.models import association_table_Manager_Resource
 from LERT.endpoints.authorization.roles import opManager_permission, manager_or_IcaAdmin, manager_permission, manager_or_OpManager
 from flask_cors import cross_origin
-from sqlalchemy import or_
 import requests
 
 manager = Blueprint('manager', __name__)
@@ -52,13 +48,13 @@ def setOpManager():
             update({Manager.idOPManager: opManagerID})
 
         session.commit()
-        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
 
+    session.close()
     return "Manager assigned to OpManager", 200
 
 @manager.route("/setIcaAdmin", methods=['POST'])
@@ -80,13 +76,13 @@ def setIcaAdmin():
             filter_by(idUser = managerId).\
             update({Manager.idICA_Admin: icaAdminId})
         session.commit()
-        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
 
+    session.close()
     return "IcaAdmin assigned to Manager", 200
 
 @manager.route("/assignResourceToManager", methods=['POST'])
@@ -100,7 +96,6 @@ def assignResourceToManager():
         managerMailReq = flask.request.json['managerMail']
         resourceMailReq = flask.request.json['resourceMail']
         bandReq = int(flask.request.json['band'])
-        icaCodeReq = flask.request.json['icaCode']
 
         resourceUserID = session.query(User).filter_by(mail = resourceMailReq).first().idUser
         resourceID = session.query(Resource).filter_by(idUser = resourceUserID).first().idSerial
@@ -125,6 +120,7 @@ def assignResourceToManager():
     except Exception as e:
         print(e)
 
+    session.close()
     return "Resource Assigned to Manager", 200
 
 @manager.route("/getManagerICA", methods=['GET'])
@@ -144,14 +140,13 @@ def getManagerICA():
             "idICA" : managerIDICA,
             "icaCode": managerICACode
         }
-
-        session.close()
      
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
 
+    session.close()
     return resultICA, 200
 
 @manager.route("/getAvailableResources", methods=['GET'])
@@ -187,13 +182,12 @@ def getAvailableResources():
 
             resultResources.append(currentResource)
 
-        session.close()
-
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
 
+    session.close()
     return jsonify(resultResources), 200
     
 @manager.route("/getResources", methods=['GET'])
@@ -234,14 +228,13 @@ def getResources():
             }
 
             resultResources.append(currentResource)
-        
-        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
 
+    session.close()
     return jsonify(resultResources), 200
 
 @manager.route("/getExpenses", methods=['GET'])
@@ -303,13 +296,13 @@ def getExpenses():
                 "administrator": mailOPManager
             }
             result_expenses.append(current)
-        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
-        
+
+    session.close()     
     return jsonify(result_expenses), 200
 
 @manager.route("/updateExpense", methods=['POST'])
@@ -333,11 +326,13 @@ def updateExpenses():
                 update({Expense.cost: expenseCostReq, Expense.date: expenseDateReq, Expense.comment:expenseCommentReq})
 
         session.commit()
-        session.close()
+
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)
     except Exception as e:
         print(e) 
+
+    session.close()
     return "Expense updated" ,200
 
 @manager.route("/deleteExpense", methods=['POST'])
@@ -356,16 +351,15 @@ def deleteExpenses():
         if expenseType == "Salary" or expenseType == "Double" or expenseType == "Triple" : 
             session.delete(resourceExpense.first())
         
-        resource_expense = session.query(association_table_Expense_Resource).filter(association_table_Expense_Resource.c.idExpense == expenseDB.idExpense).first()
         session.delete(expenseDB)
-        session.commit()
-        session.close()
+        session.commit() 
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)
     except Exception as e:
         print(e) 
 
+    session.close()
     return "Expense Deleted", 200
 
 @manager.route("/expensesForQuarter", methods=['POST'])
@@ -417,13 +411,12 @@ def expensesForQuarter():
             "4": fourth_quarter,
         }
 
-        session.close()
-
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)
     except Exception as e:
         print(e) 
 
+    session.close()
     return quarters, 200
     
 @manager.route("/reportExpense", methods=['GET'])
@@ -497,13 +490,12 @@ def reportExpense():
             if item["date"] >= str(startDateReq) and item["date"] <= str(endDateReq):
                 report.append(item)
 
-        session.close()
-
     except requests.exceptions.RequestException as e:  
         raise SystemExit(e)
     except Exception as e:
         print(e) 
     
+    session.close()
     return jsonify(report), 200
 
 @manager.route("/getAvailableDelegates", methods=['GET'])
@@ -534,14 +526,13 @@ def getAvailableDelegates():
             }
 
             availableDelegates.append(delegate)
-        
-        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)
     except Exception as e:
         print(e)
     
+    session.close()
     return jsonify(availableDelegates), 200
 
 @manager.route("/getICAAdminManager", methods=['GET'])
@@ -571,14 +562,13 @@ def getICAAdminManager():
                 "idICA_Admin" : icaAdminIDUser,
                 "icaMail" : icaAdminMail 
             }
-        
-        session.close()
      
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
 
+    session.close()
     return resultICA, 200
 
 @manager.route("/deleteIcaAdminFromManager", methods=['POST'])
@@ -605,11 +595,11 @@ def deleteIcaAdminFromManager():
             })
 
         session.commit()
-        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e) 
 
+    session.close()
     return "Ica Admin unassigned", 200

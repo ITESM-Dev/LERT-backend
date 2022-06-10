@@ -1,5 +1,3 @@
-from sys import stderr
-from turtle import TPen
 from flask import Blueprint, jsonify
 import flask
 from flask_cors import cross_origin
@@ -44,13 +42,12 @@ def getBandTypes():
             }
             bandTypes.append(currentBand)
 
-        session.close()
-
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
     
+    session.close()
     return jsonify(bandTypes)
     
 
@@ -82,13 +79,13 @@ def updateBandTypes():
             BandType.yearlyRate:yearlyRateReq, BandType.dateToStart: startDateReq, BandType.dateToFinish: endDateReq})
 
         session.commit()
-        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e) 
 
+    session.close()
     return "Band Type Updated", 200
 
 @opManager.route("/deleteBandType", methods=['POST'])
@@ -111,13 +108,13 @@ def deleteBandTypes():
         session.delete(bandTypeDB)
         session.delete(hourType)
         session.commit()
-        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e) 
  
+    session.close()
     return "Band Type Deleted", 200
 
 @opManager.route("/getHourTypes", methods=['GET'])
@@ -142,13 +139,12 @@ def getHourTypes():
             }
             hourTypes.append(currentHourType)
 
-        session.close()
-
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
 
+    session.close()
     return jsonify(hourTypes)
 
 @opManager.route("/getManagers", methods=['GET'])
@@ -180,13 +176,12 @@ def getManagers():
 
             resultManagers.append(currentManager)
 
-        session.close()
-
     except requests.exceptions.RequestException as e: 
         raise SystemExit(e)        
     except Exception as e:
         print(e)
 
+    session.close()
     return jsonify(resultManagers), 200    
 
 @opManager.route("/updateManager", methods=['PATCH'])
@@ -213,14 +208,14 @@ def updateManager():
             managerDBQuery.\
                 update({Manager.status: managerStatusReq}, synchronize_session='fetch')
 
-            session.commit()  
-        session.close()
+            session.commit()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
 
+    session.close()
     return statusCode  
     
 @opManager.route("/updateHourType", methods=['POST'])
@@ -251,13 +246,13 @@ def updateHourType():
             HourType.rate:rateReq, HourType.dateToStart: startDateReq, HourType.dateToFinish: endDateReq})
 
         session.commit()
-        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e) 
 
+    session.close()
     return "Hour Type Updated", 200
 
 @opManager.route("/deleteHourType", methods=['POST'])
@@ -273,13 +268,13 @@ def deleteHourType():
         
         session.delete(hourTypeDB)
         session.commit()
-        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e) 
 
+    session.close()
     return "Hour Type Deleted", 200
 
 @opManager.route("/getCurrentPeriods", methods=['GET'])
@@ -302,12 +297,12 @@ def getCurrentPeriods():
             }
             currentPeriods.append(currentPeriod)
 
-        session.close()
-
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
+
+    session.close()
     return jsonify(currentPeriods)
 
 @opManager.route("/updateCurrentPeriod", methods=['POST'])
@@ -330,13 +325,13 @@ def updateCurrentPeriod():
             CurrentPeriod.key:keyReq, CurrentPeriod.status: statusReq})
 
         session.commit()
-        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e) 
 
+    session.close()
     return "Current Period Updated", 200
 
 @opManager.route("/deleteCurrentPeriod", methods=['POST'])
@@ -352,13 +347,13 @@ def deleteCurrentPeriod():
         
         session.delete(currentPeriodDB)
         session.commit()
-        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e) 
 
+    session.close()
     return "Current Period Deleted", 200
 
 @opManager.route("/getIcas", methods=['GET'])
@@ -423,13 +418,12 @@ def getIcas():
 
             icas.append(currentIca)
 
-        session.close()
-
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
 
+    session.close()
     return jsonify(icas)
 
 @opManager.route("/updateIca", methods=['POST'])
@@ -499,13 +493,13 @@ def updateIca():
             update({Manager.idICA: None})
 
         session.commit()
-        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e) 
 
+    session.close()
     return "ICA Updated", 200
 
 @opManager.route("/deleteIca", methods=['POST'])
@@ -521,13 +515,13 @@ def deleteIca():
         
         session.delete(icaDB)
         session.commit()
-        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e) 
 
+    session.close()
     return "ICA Deleted", 200
 
 @opManager.route("/getAvailableManagersICA", methods=['GET'])
@@ -552,14 +546,13 @@ def getAvailableManagersICA():
             }
 
             managers.append(currentManager)
-       
-        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
 
+    session.close()
     return jsonify(managers), 200
 
 @opManager.route("/getManagersNoOpManager", methods=['GET'])
@@ -584,14 +577,13 @@ def getManagersNoOpManager():
             }
 
             managers.append(currentManager)
-        
-        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
 
+    session.close()
     return jsonify(managers), 200
 
 @opManager.route("/getManagersNoIcaAdmins", methods=['GET'])
@@ -616,13 +608,13 @@ def getManagersNoIcaAdmins():
             }
 
             managers.append(currentManager)
-        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
 
+    session.close()
     return jsonify(managers), 200
 
 @opManager.route("/getManagerAndIcaAdmins", methods=['GET'])
@@ -656,14 +648,13 @@ def getManagerAndIcaAdmins():
             }
 
             managers.append(currentManager)
-        
-        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
 
+    session.close()
     return jsonify(managers), 200
 
 @opManager.route("/geICAAdmins", methods=['GET'])
@@ -690,14 +681,13 @@ def geICAAdmins():
             }
 
             icaAdmins.append(currentIcaAdmin)
-        
-        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e)
 
+    session.close()
     return jsonify(icaAdmins), 200
 
 @opManager.route("/OpAssignIcaAdminManager", methods=['POST'])
@@ -727,13 +717,13 @@ def OpAssignIcaAdminManager():
             })
 
         session.commit()
-        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e) 
 
+    session.close()
     return "ICA Admin assigned to Manager", 200
 
 @opManager.route("/deleteManagerFromOPManager", methods=['POST'])
@@ -759,11 +749,11 @@ def deleteManagerFromOPManager():
             })
 
         session.commit()
-        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e) 
 
+    session.close()
     return "Manager unassigned", 200

@@ -37,13 +37,13 @@ def getManagersIcaAdmin():
                 "mail": managerUser.mail
             }
             managers.append(currentmanager)
-        session.close()
 
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e) 
 
+    session.close()
     return jsonify(managers)
 
 @icaAdmin.route("/assignTokenAuthenticator", methods=['POST'])
@@ -66,11 +66,10 @@ def assignTokenAuthenticator():
         )
         session.commit()
 
-        session.close()
-
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
     except Exception as e:
         print(e) 
 
+    session.close()
     return temporal_token, 200

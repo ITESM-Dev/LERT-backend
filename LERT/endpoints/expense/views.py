@@ -81,8 +81,6 @@ def createExpense():
         association_expense_resource = association_table_Expense_Resource.insert().values(idExpense = expense1.idExpense, idResource = resourceID)
         session.execute(association_expense_resource) 
         session.commit()     
-
-        session.close()   
         
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -91,4 +89,5 @@ def createExpense():
 
     id = {"id": expense1.idExpense }
     
+    session.close()
     return id, 201 

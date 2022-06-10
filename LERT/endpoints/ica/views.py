@@ -94,7 +94,6 @@ def createICA():
             update({Manager.idICA: ica1.idICA})
 
         session.commit() 
-        session.close()
         
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)        
@@ -104,4 +103,5 @@ def createICA():
 
     id = {"id": ica1.idICA}
     
+    session.close()
     return id, 201 
