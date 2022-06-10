@@ -657,7 +657,7 @@ def getManagerAndIcaAdmins():
     session.close()
     return jsonify(managers), 200
 
-@opManager.route("/geICAAdmins", methods=['GET'])
+@opManager.route("/getICAAdmins", methods=['GET'])
 @cross_origin()
 @flask_login.login_required
 @manager_or_OpManager.require(http_exception=403)
