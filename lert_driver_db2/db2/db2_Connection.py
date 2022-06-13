@@ -1,8 +1,9 @@
-import ibm_db
-import ibm_db_dbi
+import ibm_db_sa
 import os
 from sqlalchemy import *
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import declarative_base
+from sqlalchemy.pool import NullPool
 
 # Definition of ENV variables
 DB_NAME = os.environ.get("DBNAME")        
@@ -11,37 +12,45 @@ DB_PASSWORD = os.environ.get("DB2INST1_PASSWORD")
 SECURITY = os.environ.get("SECURITY")
 UID = os.environ.get("UID")
 CERTIFICATE = os.environ.get("CERTIFICATE")
+DB_PORT = os.environ.get("DB_PORT")
 
+
+def singleton(class_):
+    instances = {}
+    def getinstance(*args, **kwargs):
+        if class_ not in instances:
+            instances[class_] = class_(*args, **kwargs)
+        return instances[class_]
+    return getinstance
+
+@singleton
 class Db2Connection(object):
     def __init__(self): 
-        self.dbstring =  f"DATABASE={DB_NAME};HOSTNAME={DB_HOSTNAME};PROTOCOL=TCPIP;PORT=50000;UID={UID};PWD={DB_PASSWORD}"
         try:
-            self.ibm_db_conn = ibm_db.connect(self.dbstring, '', '')
-            self._validate_connection()
-            conn = ibm_db_dbi.Connection(self.ibm_db_conn)
-            self.cursor = conn.cursor()
-        except Exception as e:
-            print(e)
+            if os.environ.get('ENVIRONMENT') == "dev":
+                db_string = f"db2+ibm_db://{UID}:{DB_PASSWORD}@{DB_HOSTNAME}:{DB_PORT}/{DB_NAME}"
+            elif os.environ.get('ENVIRONMENT') == "prod":
+                db_string = f"db2+ibm_db://{UID}:{DB_PASSWORD}@{DB_HOSTNAME}:{DB_PORT}/{DB_NAME};SECURITY=SSL;"
 
-    def _create_connection_sqlAlchemy(self):
-        try:
-            e = create_engine(f"db2+ibm_db://{UID}:{DB_PASSWORD}@{DB_HOSTNAME}:50000/{DB_NAME}")
+            engine_db = create_engine(db_string, pool_size=10, max_overflow=0)
+            self.e = engine_db
             self.metadata = MetaData()
-            self.metadata.bind = e
-            Session = sessionmaker(e)
-            self.Session = Session()
+            self.Base = declarative_base(metadata=self.metadata)
+            self.metadata.bind = self.e
+            self._create_connection_sqlAlchemy()
+
             
         except Exception as e:
             print(e)
+    def _create_connection_sqlAlchemy(self):
+            Session = sessionmaker(self.e)
+            self.session = Session()
 
     def _create_models(self):
         try:
             self.metadata.create_all()
         except Exception as e:
             print(e)
-
-    def _validate_connection(self):
-        print(f"State of connection is: {ibm_db.active(self.ibm_db_conn)}")
 
     def execute(self, sentence):
         self.cursor.execute(sentence)
@@ -52,7 +61,3 @@ class Db2Connection(object):
             return self.cursor.fetchall()
         except Exception as e:
             print(e)
-
-    def close_connection(self):
-        self.cursor.close()
-        ibm_db.close(self.ibm_db_conn)

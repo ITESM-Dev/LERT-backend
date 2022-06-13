@@ -1,0 +1,949 @@
+{
+	"info": {
+		"_postman_id": "1ebd7193-aad0-4348-a8e3-c32ed759cbfe",
+		"name": "Integration testing GETS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15415710"
+	},
+	"item": [
+		{
+			"name": "🤏Get Resources",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Content-Type header is application/json\", () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "0mL_ocpKw4mU245Whm4bTbb3jmpzoe_DPint7DrtZ6o",
+						"type": "text"
+					},
+					{
+						"key": "mail",
+						"value": "manager@test.com",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URI_DEV}}/getResources",
+					"host": [
+						"{{URI_DEV}}"
+					],
+					"path": [
+						"getResources"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "🖍️Salary Type",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "djSsWw9f_5GlkWtEyXWTTlNMT6g2VGpT3fIuFM0Lk2U",
+								"type": "text"
+							},
+							{
+								"key": "mail",
+								"value": "mail4@test.com",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"Salary\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8000/createExpenseType",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"createExpenseType"
+							]
+						}
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": null
+				}
+			]
+		},
+		{
+			"name": "🤏Get Expenses",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Content-Type header is application/json\", () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "0mL_ocpKw4mU245Whm4bTbb3jmpzoe_DPint7DrtZ6o",
+						"type": "text"
+					},
+					{
+						"key": "mail",
+						"value": "manager@test.com",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URI_DEV}}/getExpenses",
+					"host": [
+						"{{URI_DEV}}"
+					],
+					"path": [
+						"getExpenses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🤏Get Hour Types",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Content-Type header is application/json\", () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "0mL_ocpKw4mU245Whm4bTbb3jmpzoe_DPint7DrtZ6o",
+						"type": "text"
+					},
+					{
+						"key": "mail",
+						"value": "manager@test.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{URI_DEV}}/getHourTypes",
+					"host": [
+						"{{URI_DEV}}"
+					],
+					"path": [
+						"getHourTypes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🤏Get Band Types",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Content-Type header is application/json\", () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "0mL_ocpKw4mU245Whm4bTbb3jmpzoe_DPint7DrtZ6o",
+						"type": "text"
+					},
+					{
+						"key": "mail",
+						"value": "manager@test.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{URI_DEV}}/getBandTypes",
+					"host": [
+						"{{URI_DEV}}"
+					],
+					"path": [
+						"getBandTypes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🤏Get ICAS",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Content-Type header is application/json\", () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "0mL_ocpKw4mU245Whm4bTbb3jmpzoe_DPint7DrtZ6o",
+						"type": "text"
+					},
+					{
+						"key": "mail",
+						"value": "manager@test.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{URI_DEV}}/getIcas",
+					"host": [
+						"{{URI_DEV}}"
+					],
+					"path": [
+						"getIcas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🤏Get Expense Types",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Content-Type header is application/json\", () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "0mL_ocpKw4mU245Whm4bTbb3jmpzoe_DPint7DrtZ6o",
+						"type": "text"
+					},
+					{
+						"key": "mail",
+						"value": "manager@test.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{URI_DEV}}/getExpenseTypes",
+					"host": [
+						"{{URI_DEV}}"
+					],
+					"path": [
+						"getExpenseTypes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🤏Get Current Periods",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Content-Type header is application/json\", () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "0mL_ocpKw4mU245Whm4bTbb3jmpzoe_DPint7DrtZ6o",
+						"type": "text"
+					},
+					{
+						"key": "mail",
+						"value": "manager@test.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{URI_DEV}}/getCurrentPeriods",
+					"host": [
+						"{{URI_DEV}}"
+					],
+					"path": [
+						"getCurrentPeriods"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🤏Get User Info",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Content-Type header is application/json\", () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "0mL_ocpKw4mU245Whm4bTbb3jmpzoe_DPint7DrtZ6o",
+						"type": "text"
+					},
+					{
+						"key": "mail",
+						"value": "manager@test.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{URI_DEV}}/getUserInfo",
+					"host": [
+						"{{URI_DEV}}"
+					],
+					"path": [
+						"getUserInfo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🤏Get managers",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Content-Type header is application/json\", () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "o1xbVQohij6tE7NED7JzIe0BHdcCMtIjeWvS41R11k4",
+						"type": "text"
+					},
+					{
+						"key": "mail",
+						"value": "opmanager@test.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{URI_DEV}}/getManagers",
+					"host": [
+						"{{URI_DEV}}"
+					],
+					"path": [
+						"getManagers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🤏Get Manager ICA",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Content-Type header is application/json\", () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "0mL_ocpKw4mU245Whm4bTbb3jmpzoe_DPint7DrtZ6o",
+						"type": "text"
+					},
+					{
+						"key": "mail",
+						"value": "manager@test.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{URI_DEV}}/getManagerICA",
+					"host": [
+						"{{URI_DEV}}"
+					],
+					"path": [
+						"getManagerICA"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🤏Get Managers ICA Admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Content-Type header is application/json\", () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "8u90p3L2JH4zsPme1C0W_EArx4ZekxskAXm5RM-WgWo",
+						"type": "text"
+					},
+					{
+						"key": "mail",
+						"value": "icaAdmin@test.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{URI_DEV}}/getManagersIcaAdmin",
+					"host": [
+						"{{URI_DEV}}"
+					],
+					"path": [
+						"getManagersIcaAdmin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🤏Get IcaAdmin Manager",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Content-Type header is application/json\", () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "0mL_ocpKw4mU245Whm4bTbb3jmpzoe_DPint7DrtZ6o",
+						"type": "text"
+					},
+					{
+						"key": "mail",
+						"value": "manager@test.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{URI_DEV}}/getICAAdminManager",
+					"host": [
+						"{{URI_DEV}}"
+					],
+					"path": [
+						"getICAAdminManager"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🤏Get Available Resources",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Content-Type header is application/json\", () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "0mL_ocpKw4mU245Whm4bTbb3jmpzoe_DPint7DrtZ6o",
+						"type": "text"
+					},
+					{
+						"key": "mail",
+						"value": "manager@test.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{URI_DEV}}/getAvailableResources",
+					"host": [
+						"{{URI_DEV}}"
+					],
+					"path": [
+						"getAvailableResources"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🤏Get Available Managers (Assign ICA owner)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Content-Type header is application/json\", () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "o1xbVQohij6tE7NED7JzIe0BHdcCMtIjeWvS41R11k4",
+						"type": "text"
+					},
+					{
+						"key": "mail",
+						"value": "opmanager@test.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{URI_DEV}}/getAvailableManagersICA",
+					"host": [
+						"{{URI_DEV}}"
+					],
+					"path": [
+						"getAvailableManagersICA"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🤏Get Managers No OpManager",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Content-Type header is application/json\", () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "o1xbVQohij6tE7NED7JzIe0BHdcCMtIjeWvS41R11k4",
+						"type": "text"
+					},
+					{
+						"key": "mail",
+						"value": "opmanager@test.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{URI_DEV}}/getManagersNoOpManager",
+					"host": [
+						"{{URI_DEV}}"
+					],
+					"path": [
+						"getManagersNoOpManager"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🤏Get Managers No IcaAdmin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Content-Type header is application/json\", () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "o1xbVQohij6tE7NED7JzIe0BHdcCMtIjeWvS41R11k4",
+						"type": "text"
+					},
+					{
+						"key": "mail",
+						"value": "opmanager@test.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{URI_DEV}}/getManagersNoIcaAdmins",
+					"host": [
+						"{{URI_DEV}}"
+					],
+					"path": [
+						"getManagersNoIcaAdmins"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🤏Get Managers And Delegates",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Content-Type header is application/json\", () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "o1xbVQohij6tE7NED7JzIe0BHdcCMtIjeWvS41R11k4",
+						"type": "text"
+					},
+					{
+						"key": "mail",
+						"value": "opmanager@test.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{URI_DEV}}/getManagerAndIcaAdmins",
+					"host": [
+						"{{URI_DEV}}"
+					],
+					"path": [
+						"getManagerAndIcaAdmins"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🤏Get Available Delegates",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Content-Type header is application/json\", () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "0mL_ocpKw4mU245Whm4bTbb3jmpzoe_DPint7DrtZ6o",
+						"type": "text"
+					},
+					{
+						"key": "mail",
+						"value": "manager@test.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{URI_DEV}}/getAvailableDelegates",
+					"host": [
+						"{{URI_DEV}}"
+					],
+					"path": [
+						"getAvailableDelegates"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🤏Get IcaAdmins",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Content-Type header is application/json\", () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "o1xbVQohij6tE7NED7JzIe0BHdcCMtIjeWvS41R11k4",
+						"type": "text"
+					},
+					{
+						"key": "mail",
+						"value": "opmanager@test.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{URI_DEV}}/getICAAdmins",
+					"host": [
+						"{{URI_DEV}}"
+					],
+					"path": [
+						"getICAAdmins"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🤏Get All Users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Content-Type header is application/json\", () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "TsBl1Dpw-Ou0MxCirFqMUv_2AkSRmibXwy40MnFmyuA",
+						"type": "text"
+					},
+					{
+						"key": "mail",
+						"value": "admin@test.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{URI_DEV}}/getAllUsers",
+					"host": [
+						"{{URI_DEV}}"
+					],
+					"path": [
+						"getAllUsers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get CSV",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Content-Type header is application/json\", () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "0mL_ocpKw4mU245Whm4bTbb3jmpzoe_DPint7DrtZ6o",
+						"type": "text"
+					},
+					{
+						"key": "mail",
+						"value": "manager@test.com",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"startDate\": \"2021-05-14\",\r\n    \"endDate\": \"2022-05-14\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URI_DEV}}/reportExpense",
+					"host": [
+						"{{URI_DEV}}"
+					],
+					"path": [
+						"reportExpense"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

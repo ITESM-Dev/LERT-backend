@@ -1,6 +1,6 @@
 name: Deploy to Cloud Foundry
 on:
-  push:
+  pull_request:
     branches: [main]
 jobs:
   deploy:

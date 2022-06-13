@@ -9,6 +9,11 @@ gunicorn = "*"
 ibm_db = "*"
 sqlalchemy = "*"
 ibm-db-sa = "*"
+flask-login = "*"
+Flask-Principal = "*"
+argon2-cffi="*"
+flask-cors = "*"
+requests = "*"
 
 [dev-packages]
 
