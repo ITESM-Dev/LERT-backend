@@ -16,6 +16,7 @@ from LERT.endpoints.expense.views import expense
 from LERT.endpoints.resourceExpense.views import resourceExpense
 from LERT.endpoints.currentPeriod.views import currentPeriod
 from LERT.db.database import connection
+import LERT.db.dbCreation
 import os
 import secrets
 import time
