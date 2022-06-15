@@ -11,9 +11,7 @@ from LERT.endpoints.manager.models import Manager
 from LERT.endpoints.user.views import user
 from LERT.endpoints.administrator.views import admin
 from LERT.endpoints.icaAdmin.views import icaAdmin
-from LERT.endpoints.resource.views import resource
 from LERT.endpoints.expense.views import expense
-from LERT.endpoints.resourceExpense.views import resourceExpense
 from LERT.endpoints.currentPeriod.views import currentPeriod
 from LERT.db.database import connection
 import LERT.db.dbCreation
@@ -58,9 +56,7 @@ def create_app():
 app.register_blueprint(user)
 app.register_blueprint(admin)
 app.register_blueprint(icaAdmin)
-app.register_blueprint(resource)
 app.register_blueprint(expense)
-app.register_blueprint(resourceExpense)
 app.register_blueprint(ica)
 app.register_blueprint(opManager)
 app.register_blueprint(manager)
