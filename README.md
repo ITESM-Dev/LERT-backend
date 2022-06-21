@@ -6,13 +6,11 @@ La página web LERT es una herramienta que permite a diferentes empleados de IBM
 - Estadísticas de gastos
 - Recuperación de recursos y gastos adicionales (crusos, certificaciones, etc)
 
-## Tecnologías y Conocimientos ⌨
+## Technologies ⌨
 - Flask
 - SQL / SQLAlchemy
-- Docker
+- Docker / Docker Compose
 - IBM Cloud / DB2
-- Jira
-- Confluence
 
 ## Autores
 - Brenda Castillo
